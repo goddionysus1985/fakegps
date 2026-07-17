@@ -1,7 +1,7 @@
 :root {
-    --bg-base: #9aa0ac;
-    --bg-sidebar: rgba(110, 115, 125, 0.95);
-    --bg-card: rgba(90, 95, 105, 0.85);
+    --bg-base: #d8dce3;
+    --bg-sidebar: rgba(225, 228, 234, 0.95);
+    --bg-card: rgba(210, 214, 222, 0.85);
     --border-color: rgba(0, 0, 0, 0.1);
     --text-primary: #1e293b;
     --text-secondary: #4b5a6e;
