@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FakeGPS Dashboard | Симулятор местоположения</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
-    
+
     <!-- Tab Favicon -->
     <link rel="icon" type="image/png" href="gps_logo.png">
-    
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar Controls -->
@@ -40,7 +45,7 @@
                 </div>
             </header>
             <div class="app-header-subtitle-wrapper">
-                <p class="subtitle">Интерактивный симулятор геопозиции</p>
+                <p class="subtitle"></p>
             </div>
 
             <div class="sidebar-scroll">
@@ -64,7 +69,8 @@
                     <div class="search-box">
                         <i data-lucide="search" class="search-icon"></i>
                         <input type="text" id="search-input" placeholder="Поиск локации или координаты...">
-                        <button id="search-btn" class="icon-btn" title="Искать"><i data-lucide="arrow-right"></i></button>
+                        <button id="search-btn" class="icon-btn" title="Искать"><i
+                                data-lucide="arrow-right"></i></button>
                     </div>
                 </section>
 
@@ -116,7 +122,8 @@
 
                     <!-- Mode Contents -->
                     <div class="tab-content" id="mode-static-panel">
-                        <p class="panel-desc">Нажмите в любое место на карте, чтобы мгновенно переместить виртуальное местоположение.</p>
+                        <p class="panel-desc">Нажмите в любое место на карте, чтобы мгновенно переместить виртуальное
+                            местоположение.</p>
                         <div class="btn-group">
                             <button id="btn-teleport-home" class="btn btn-secondary">
                                 <i data-lucide="home"></i> Домой
@@ -160,8 +167,9 @@
                     </div>
 
                     <div class="tab-content hidden" id="mode-joystick-panel">
-                        <p class="panel-desc">Управляйте маркером с помощью WASD / стрелок на клавиатуре или виртуального джойстика ниже.</p>
-                        
+                        <p class="panel-desc">Управляйте маркером с помощью WASD / стрелок на клавиатуре или
+                            виртуального джойстика ниже.</p>
+
                         <div class="joystick-wrapper">
                             <div class="joystick-base" id="joy-base">
                                 <div class="joystick-stick" id="joy-stick"></div>
@@ -188,7 +196,8 @@
                 <!-- Developer Integration -->
                 <section class="panel-section">
                     <h3 class="section-title"><i data-lucide="terminal"></i> Интеграция в браузер</h3>
-                    <p class="panel-desc">Скопируйте этот скрипт и выполните его в консоли (F12) любой вкладки, чтобы подменить координаты в реальном времени:</p>
+                    <p class="panel-desc">Скопируйте этот скрипт и выполните его в консоли (F12) любой вкладки, чтобы
+                        подменить координаты в реальном времени:</p>
                     <div class="code-block-wrapper">
                         <pre><code id="override-script-code">
 // Скрипт подмены Geolocation API
@@ -219,26 +228,26 @@ navigator.geolocation.getCurrentPosition = (success) => {
         <!-- Map Container -->
         <main class="map-view">
             <div id="map"></div>
-            
+
             <!-- Quick HUD layer on map -->
             <div class="map-hud">
                 <div class="hud-item">
-                    <span class="hud-dot active"></span>
-                    <span id="hud-status">Симуляция активна (Статично)</span>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <!-- App Logic -->
     <script src="app.js"></script>
-    
+
     <!-- Render Lucide Icons -->
     <script>
         lucide.createIcons();
     </script>
 </body>
+
 </html>
