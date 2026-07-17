@@ -731,3 +731,43 @@ body.dark-mode .leaflet-bar a:hover {
 .high-contrast-dark-labels {
     filter: brightness(2.2) contrast(1.4) saturate(1.2) !important;
 }
+
+/* Sidebar Footer / Author Credit */
+.sidebar-footer {
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.author-credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    transition: all 0.2s ease;
+}
+
+.author-credit i {
+    width: 14px;
+    height: 14px;
+    color: #2aabee;
+    flex-shrink: 0;
+}
+
+.author-credit strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.author-credit:hover {
+    border-color: #2aabee;
+    background-color: rgba(42, 171, 238, 0.08);
+    color: var(--text-primary);
+    box-shadow: 0 0 12px rgba(42, 171, 238, 0.15);
+}
