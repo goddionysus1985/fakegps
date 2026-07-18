@@ -71,7 +71,7 @@ const mapLayers = {
         maxZoom: 20,
         className: 'map-light-tiles'
     }),
-    google: L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}', {
+    google: L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=en&gl=US&x={x}&y={y}&z={z}', {
         attribution: '&copy; Google Maps',
         maxZoom: 20
     }),
