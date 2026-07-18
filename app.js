@@ -9,7 +9,7 @@ if (savedCoords) {
             startLat = parsed.lat;
             startLng = parsed.lng;
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 // App configuration and state
@@ -21,10 +21,10 @@ const STATE = {
     heading: 0,
     accuracy: 3,
     activeMode: 'static', // 'static', 'route', 'joystick'
-    
+
     // Bookmark locations
     bookmarks: [],
-    
+
     // Route state
     routePoints: [],      // Array of L.LatLng
     routePolyline: null,  // Leaflet Polyline
@@ -35,7 +35,7 @@ const STATE = {
     routeStartMarker: null,
     routeStartPoint: null,
     routeEndPoint: null,
-    
+
     // Joystick state
     joyActive: false,
     joyPos: { x: 0, y: 0 },
@@ -201,9 +201,9 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
 
     elLat.textContent = STATE.lat.toFixed(6);
     elLng.textContent = STATE.lng.toFixed(6);
-    
+
     elSpeed.innerHTML = `${STATE.speed.toFixed(1)} <span class="unit">км/ч</span>`;
-    
+
     // Heading direction
     let dir = 'N';
     if (STATE.heading > 22.5 && STATE.heading <= 67.5) dir = 'NE';
@@ -213,13 +213,13 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
     else if (STATE.heading > 202.5 && STATE.heading <= 247.5) dir = 'SW';
     else if (STATE.heading > 247.5 && STATE.heading <= 292.5) dir = 'W';
     else if (STATE.heading > 292.5 && STATE.heading <= 337.5) dir = 'NW';
-    
+
     elHeading.innerHTML = `${STATE.heading}° <span class="unit">${dir}</span>`;
     elAlt.innerHTML = `${STATE.alt} <span class="unit">м</span>`;
     elAccuracy.innerHTML = `${STATE.accuracy} <span class="unit">м</span>`;
-    
+
     mainMarker.setLatLng([STATE.lat, STATE.lng]);
-    
+
     // Rotate and show/hide heading beam like iOS
     const markerEl = mainMarker.getElement();
     if (markerEl) {
@@ -236,7 +236,7 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
             }
         }
     }
-    
+
     // Update Override script
     elCodeBlock.textContent = `// Скрипт подмены Geolocation API
 const mockLat = ${STATE.lat.toFixed(6)};
@@ -339,31 +339,17 @@ tabs.forEach(tab => {
     tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        
+
         // Hide all mode panels
         document.getElementById('mode-static-panel').classList.add('hidden');
         document.getElementById('mode-route-panel').classList.add('hidden');
         document.getElementById('mode-joystick-panel').classList.add('hidden');
-        
+
         const mode = tab.getAttribute('data-mode');
         STATE.activeMode = mode;
-        
+
         document.getElementById(`mode-${mode}-panel`).classList.remove('hidden');
-        
-        // Manage indicators and actions
-        if (mode !== 'route') {
-            clearRoute();
-        }
-        if (mode === 'joystick') {
-            startJoystickLoop();
-            elStatus.textContent = "Режим управления: Джойстик / WASD";
-        } else {
-            stopJoystickLoop();
-            if (mode === 'static') elStatus.textContent = "Симуляция активна (Статично)";
-            else elStatus.textContent = "Режим маршрута";
-        }
-        
-        updateTelemetry(STATE.lat, STATE.lng, 0);
+
     });
 });
 
@@ -374,7 +360,7 @@ const searchBtn = document.getElementById('search-btn');
 async function performSearch() {
     const query = searchInput.value.trim();
     if (!query) return;
-    
+
     // Check if user input looks like coords (e.g. 55.75, 37.61)
     const coordMatch = query.match(/^([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)$/);
     if (coordMatch) {
@@ -384,7 +370,7 @@ async function performSearch() {
         map.setView([lat, lng], 14);
         return;
     }
-    
+
     // Query OSM Nominatim
     try {
         searchBtn.disabled = true;
@@ -446,7 +432,7 @@ function renderBookmarks() {
         bookmarksList.innerHTML = '<li class="empty-list-msg">Нет сохраненных локаций</li>';
         return;
     }
-    
+
     STATE.bookmarks.forEach((bm, idx) => {
         const li = document.createElement('li');
         li.className = 'bookmark-item';
@@ -457,16 +443,16 @@ function renderBookmarks() {
             </div>
             <button class="icon-btn delete-bm-btn" data-index="${idx}" title="Удалить"><i data-lucide="x"></i></button>
         `;
-        
+
         li.addEventListener('click', (e) => {
             if (e.target.closest('.delete-bm-btn')) return;
             updateTelemetry(bm.lat, bm.lng, 0);
             map.flyTo([bm.lat, bm.lng], 14);
         });
-        
+
         bookmarksList.appendChild(li);
     });
-    
+
     // Activate delete buttons
     document.querySelectorAll('.delete-bm-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -477,7 +463,7 @@ function renderBookmarks() {
             renderBookmarks();
         });
     });
-    
+
     lucide.createIcons();
 }
 
@@ -513,7 +499,7 @@ function setRouteDestination(latlng) {
     if (routeTargetMarker) {
         map.removeLayer(routeTargetMarker);
     }
-    
+
     routingDestination = latlng;
     routeTargetMarker = L.marker(latlng, {
         icon: L.divIcon({
@@ -523,42 +509,42 @@ function setRouteDestination(latlng) {
             iconAnchor: [10, 10]
         })
     }).addTo(map);
-    
+
     btnDrawRoute.disabled = false;
 }
 
 btnDrawRoute.addEventListener('click', async () => {
     if (!STATE.routeStartPoint || !STATE.routeEndPoint) return;
-    
+
     btnDrawRoute.disabled = true;
     btnDrawRoute.innerHTML = `<i data-lucide="loader"></i> Вычисление...`;
     lucide.createIcons();
-    
+
     try {
         // Query OSRM Routing API (Free road routing service)
         const url = `https://router.project-osrm.org/route/v1/driving/${STATE.routeStartPoint.lng},${STATE.routeStartPoint.lat};${STATE.routeEndPoint.lng},${STATE.routeEndPoint.lat}?overview=full&geometries=geojson`;
         const res = await fetch(url);
         const data = await res.json();
-        
+
         if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
             const coords = data.routes[0].geometry.coordinates;
-            
+
             // Map coordinates from [lng, lat] to L.LatLng
             STATE.routePoints = coords.map(c => L.latLng(c[1], c[0]));
-            
+
             if (STATE.routePolyline) {
                 map.removeLayer(STATE.routePolyline);
             }
-            
+
             STATE.routePolyline = L.polyline(STATE.routePoints, {
                 color: 'var(--primary)',
                 weight: 4,
                 opacity: 0.8,
                 dashArray: '5, 10'
             }).addTo(map);
-            
+
             map.fitBounds(STATE.routePolyline.getBounds(), { padding: [50, 50] });
-            
+
             btnStartRoute.disabled = false;
             btnStartRoute.classList.add('pulse-glow');
             elStatus.textContent = "Маршрут построен. Нажмите 'Запуск'";
@@ -608,7 +594,7 @@ function clearRoute() {
     STATE.routeEndPoint = null;
     STATE.routePoints = [];
     STATE.routeIndex = 0;
-    
+
     btnStartRoute.disabled = true;
     btnPauseRoute.disabled = true;
     btnStartRoute.innerHTML = `<i data-lucide="play"></i> Запуск`;
@@ -640,13 +626,13 @@ btnStartRoute.addEventListener('click', () => {
         btnStartRoute.innerHTML = `<i data-lucide="pause"></i> Пауза`;
         btnPauseRoute.disabled = false;
         elStatus.textContent = "Маршрут симулируется...";
-        
+
         const speedKmh = parseFloat(selectRouteSpeed.value);
         // Calculate dynamic step rate
         // We will advance coordinates along the line
         let currentPos = STATE.routeIndex === 0 ? STATE.routeStartPoint : L.latLng(STATE.lat, STATE.lng);
         let nextPointIndex = STATE.routeIndex;
-        
+
         if (nextPointIndex === 0) {
             nextPointIndex = 1;
         }
@@ -654,7 +640,7 @@ btnStartRoute.addEventListener('click', () => {
         const intervalMs = 100; // 10 ticks per second
         const speedMs = (speedKmh * 1000) / 3600; // speed in meters per second
         const stepDistance = speedMs * (intervalMs / 1000); // meters per tick
-        
+
         STATE.routeInterval = setInterval(() => {
             if (nextPointIndex >= STATE.routePoints.length) {
                 // Route finished
@@ -664,10 +650,10 @@ btnStartRoute.addEventListener('click', () => {
                 clearRoute();
                 return;
             }
-            
+
             let targetPt = STATE.routePoints[nextPointIndex];
             let dist = currentPos.distanceTo(targetPt); // Distance in meters
-            
+
             if (dist <= stepDistance) {
                 currentPos = targetPt;
                 nextPointIndex++;
@@ -679,7 +665,7 @@ btnStartRoute.addEventListener('click', () => {
                 let newLng = currentPos.lng + (targetPt.lng - currentPos.lng) * ratio;
                 currentPos = L.latLng(newLat, newLng);
             }
-            
+
             // Calculate bearing/heading (convert to radians for trig functions)
             let bearing = 0;
             if (nextPointIndex < STATE.routePoints.length) {
@@ -687,12 +673,12 @@ btnStartRoute.addEventListener('click', () => {
                 const lat1 = currentPos.lat * Math.PI / 180;
                 const lat2 = nextPt.lat * Math.PI / 180;
                 const dLng = (nextPt.lng - currentPos.lng) * Math.PI / 180;
-                
+
                 const y = Math.sin(dLng) * Math.cos(lat2);
                 const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
                 bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
             }
-            
+
             updateTelemetry(currentPos.lat, currentPos.lng, speedKmh, bearing);
             map.panTo(currentPos, { animate: false });
         }, intervalMs);
@@ -733,7 +719,7 @@ function initJoystickDrag(e) {
 
 function dragJoystick(e) {
     if (!STATE.joyActive) return;
-    
+
     let clientX, clientY;
     if (e.touches) {
         clientX = e.touches[0].clientX;
@@ -743,23 +729,23 @@ function dragJoystick(e) {
         clientX = e.clientX;
         clientY = e.clientY;
     }
-    
+
     const rect = joyBase.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     let deltaX = clientX - centerX;
     let deltaY = clientY - centerY;
-    
+
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    
+
     if (distance > stickMaxRadius) {
         deltaX = (deltaX / distance) * stickMaxRadius;
         deltaY = (deltaY / distance) * stickMaxRadius;
     }
-    
+
     joyStick.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-    
+
     // Normalized vectors (-1 to 1)
     STATE.joyDelta.x = deltaX / stickMaxRadius;
     STATE.joyDelta.y = deltaY / stickMaxRadius;
@@ -779,10 +765,10 @@ function endJoystickDrag() {
 const keysDown = {};
 document.addEventListener('keydown', (e) => {
     if (STATE.activeMode !== 'joystick') return;
-    
+
     const key = e.key.toLowerCase();
     const code = e.code.toLowerCase();
-    
+
     // Prevent default scroll actions
     if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(key) || ['keyw', 'keya', 'keys', 'keyd'].includes(code)) {
         if (document.activeElement.tagName !== 'INPUT') {
@@ -803,21 +789,21 @@ document.addEventListener('keyup', (e) => {
 // Joystick updates frame loop
 function startJoystickLoop() {
     if (STATE.joyAnimationId) return;
-    
+
     let lastTime = performance.now();
-    
+
     function loop(time) {
         if (STATE.activeMode !== 'joystick') {
             STATE.joyAnimationId = null;
             return;
         }
-        
+
         let dt = (time - lastTime) / 1000; // seconds
         lastTime = time;
-        
+
         let dx = STATE.joyDelta.x;
         let dy = STATE.joyDelta.y;
-        
+
         // Add keyboard influence if keyboard inputs are active
         let kx = 0;
         let ky = 0;
@@ -825,32 +811,32 @@ function startJoystickLoop() {
         if (keysDown['s'] || keysDown['arrowdown'] || keysDown['keys']) ky += 1;
         if (keysDown['a'] || keysDown['arrowleft'] || keysDown['keya']) kx -= 1;
         if (keysDown['d'] || keysDown['arrowright'] || keysDown['keyd']) kx += 1;
-        
+
         if (kx !== 0 || ky !== 0) {
             // Normalize keyboard input vector to ensure perfect diagonal motion
             const len = Math.sqrt(kx * kx + ky * ky);
             dx = kx / len;
             dy = ky / len;
         }
-        
+
         const isMoving = dx !== 0 || dy !== 0;
-        
+
         if (isMoving) {
             // Speed in degrees/sec (rough approximation: 1 degree latitude = 111 km)
             const speedKmh = STATE.joySpeed;
             const speedDegPerSec = (speedKmh / 3600) / 111; // speed in degrees/second
-            
+
             // Calc distance to move
             const moveLat = -dy * speedDegPerSec * dt;
             // Adjust longitude move by latitude cosine
             const moveLng = dx * speedDegPerSec * dt / Math.cos(STATE.lat * Math.PI / 180);
-            
+
             const newLat = STATE.lat + moveLat;
             const newLng = STATE.lng + moveLng;
-            
+
             // Calculate angle
             const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
-            
+
             updateTelemetry(newLat, newLng, speedKmh, angle);
             map.panTo([newLat, newLng], { animate: false });
         } else {
@@ -859,10 +845,10 @@ function startJoystickLoop() {
                 updateTelemetry(STATE.lat, STATE.lng, 0);
             }
         }
-        
+
         STATE.joyAnimationId = requestAnimationFrame(loop);
     }
-    
+
     STATE.joyAnimationId = requestAnimationFrame(loop);
 }
 
