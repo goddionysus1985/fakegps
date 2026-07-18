@@ -190,17 +190,17 @@ document.head.appendChild(style);
 
 // Update HUD & UI Telemetry
 function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading, alt = STATE.alt) {
-    STATE.lat = parseFloat(lat.toFixed(6));
-    STATE.lng = parseFloat(lng.toFixed(6));
+    STATE.lat = lat;
+    STATE.lng = lng;
     STATE.speed = speed;
     STATE.heading = Math.round(heading) % 360;
     STATE.alt = Math.round(alt);
 
-    // Save active position to localStorage
-    localStorage.setItem('fakegps_coords', JSON.stringify({ lat: STATE.lat, lng: STATE.lng }));
+    // Save active position to localStorage (rounded for consistency)
+    localStorage.setItem('fakegps_coords', JSON.stringify({ lat: parseFloat(STATE.lat.toFixed(6)), lng: parseFloat(STATE.lng.toFixed(6)) }));
 
-    elLat.textContent = STATE.lat;
-    elLng.textContent = STATE.lng;
+    elLat.textContent = STATE.lat.toFixed(6);
+    elLng.textContent = STATE.lng.toFixed(6);
     
     elSpeed.innerHTML = `${STATE.speed.toFixed(1)} <span class="unit">км/ч</span>`;
     
@@ -239,8 +239,8 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
     
     // Update Override script
     elCodeBlock.textContent = `// Скрипт подмены Geolocation API
-const mockLat = ${STATE.lat};
-const mockLng = ${STATE.lng};
+const mockLat = ${STATE.lat.toFixed(6)};
+const mockLng = ${STATE.lng.toFixed(6)};
 const mockSpeed = ${STATE.speed > 0 ? (STATE.speed / 3.6).toFixed(2) : 'null'}; // м/с
 const mockHeading = ${STATE.speed > 0 ? STATE.heading : 'null'};
 
@@ -694,7 +694,7 @@ btnStartRoute.addEventListener('click', () => {
             }
             
             updateTelemetry(currentPos.lat, currentPos.lng, speedKmh, bearing);
-            map.panTo(currentPos);
+            map.panTo(currentPos, { animate: false });
         }, intervalMs);
     }
     lucide.createIcons();
@@ -852,7 +852,7 @@ function startJoystickLoop() {
             const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
             
             updateTelemetry(newLat, newLng, speedKmh, angle);
-            map.panTo([newLat, newLng]);
+            map.panTo([newLat, newLng], { animate: false });
         } else {
             // Decelerating if not moving
             if (STATE.speed > 0) {
