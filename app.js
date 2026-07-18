@@ -32,6 +32,9 @@ const STATE = {
     routeInterval: null,  // Simulation timer
     isRoutePlaying: false,
     routeTargetMarker: null,
+    routeStartMarker: null,
+    routeStartPoint: null,
+    routeEndPoint: null,
     
     // Joystick state
     joyActive: false,
@@ -288,9 +291,47 @@ map.on('click', (e) => {
         updateTelemetry(e.latlng.lat, e.latlng.lng, 0);
         map.panTo(e.latlng);
     } else if (STATE.activeMode === 'route') {
-        setRouteDestination(e.latlng);
+        handleRouteMapClick(e.latlng);
     }
 });
+
+function handleRouteMapClick(latlng) {
+    if (STATE.routeStartPoint && STATE.routeEndPoint) {
+        clearRoute();
+    }
+
+    if (!STATE.routeStartPoint) {
+        STATE.routeStartPoint = latlng;
+        if (STATE.routeStartMarker) {
+            map.removeLayer(STATE.routeStartMarker);
+        }
+        STATE.routeStartMarker = L.marker(latlng, {
+            icon: L.divIcon({
+                className: 'custom-pulse-marker',
+                html: `<div class="marker-pulse" style="background-color: rgba(249, 115, 22, 0.4)"></div><div class="marker-core" style="background-color: #f97316"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            })
+        }).addTo(map);
+        elStatus.textContent = "Точка старта выбрана. Выберите точку финиша (клик 2)";
+    } else if (!STATE.routeEndPoint) {
+        STATE.routeEndPoint = latlng;
+        routingDestination = latlng;
+        if (routeTargetMarker) {
+            map.removeLayer(routeTargetMarker);
+        }
+        routeTargetMarker = L.marker(latlng, {
+            icon: L.divIcon({
+                className: 'custom-pulse-marker',
+                html: `<div class="marker-pulse" style="background-color: rgba(16, 185, 129, 0.4)"></div><div class="marker-core" style="background-color: var(--accent)"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            })
+        }).addTo(map);
+        btnDrawRoute.disabled = false;
+        elStatus.textContent = "Точки выбраны. Нажмите 'Построить маршрут'";
+    }
+}
 
 // Mode Switching Logic
 const tabs = document.querySelectorAll('.tab-btn');
@@ -487,7 +528,7 @@ function setRouteDestination(latlng) {
 }
 
 btnDrawRoute.addEventListener('click', async () => {
-    if (!routingDestination) return;
+    if (!STATE.routeStartPoint || !STATE.routeEndPoint) return;
     
     btnDrawRoute.disabled = true;
     btnDrawRoute.innerHTML = `<i data-lucide="loader"></i> Вычисление...`;
@@ -495,7 +536,7 @@ btnDrawRoute.addEventListener('click', async () => {
     
     try {
         // Query OSRM Routing API (Free road routing service)
-        const url = `https://router.project-osrm.org/route/v1/driving/${STATE.lng},${STATE.lat};${routingDestination.lng},${routingDestination.lat}?overview=full&geometries=geojson`;
+        const url = `https://router.project-osrm.org/route/v1/driving/${STATE.routeStartPoint.lng},${STATE.routeStartPoint.lat};${STATE.routeEndPoint.lng},${STATE.routeEndPoint.lat}?overview=full&geometries=geojson`;
         const res = await fetch(url);
         const data = await res.json();
         
@@ -536,7 +577,7 @@ btnDrawRoute.addEventListener('click', async () => {
 });
 
 function createStraightRoute() {
-    STATE.routePoints = [L.latLng(STATE.lat, STATE.lng), routingDestination];
+    STATE.routePoints = [STATE.routeStartPoint, STATE.routeEndPoint];
     if (STATE.routePolyline) {
         map.removeLayer(STATE.routePolyline);
     }
@@ -558,13 +599,20 @@ function clearRoute() {
         map.removeLayer(routeTargetMarker);
         routeTargetMarker = null;
     }
+    if (STATE.routeStartMarker) {
+        map.removeLayer(STATE.routeStartMarker);
+        STATE.routeStartMarker = null;
+    }
     routingDestination = null;
+    STATE.routeStartPoint = null;
+    STATE.routeEndPoint = null;
     STATE.routePoints = [];
     STATE.routeIndex = 0;
     
     btnStartRoute.disabled = true;
     btnPauseRoute.disabled = true;
     btnStartRoute.innerHTML = `<i data-lucide="play"></i> Запуск`;
+    elStatus.textContent = "Выберите на карте точку старта (клик 1)";
     lucide.createIcons();
 }
 
@@ -596,7 +644,7 @@ btnStartRoute.addEventListener('click', () => {
         const speedKmh = parseFloat(selectRouteSpeed.value);
         // Calculate dynamic step rate
         // We will advance coordinates along the line
-        let currentPos = L.latLng(STATE.lat, STATE.lng);
+        let currentPos = STATE.routeIndex === 0 ? STATE.routeStartPoint : L.latLng(STATE.lat, STATE.lng);
         let nextPointIndex = STATE.routeIndex;
         
         if (nextPointIndex === 0) {
@@ -632,13 +680,17 @@ btnStartRoute.addEventListener('click', () => {
                 currentPos = L.latLng(newLat, newLng);
             }
             
-            // Calculate bearing/heading
+            // Calculate bearing/heading (convert to radians for trig functions)
             let bearing = 0;
             if (nextPointIndex < STATE.routePoints.length) {
                 const nextPt = STATE.routePoints[nextPointIndex];
-                const y = Math.sin(nextPt.lng - currentPos.lng) * Math.cos(nextPt.lat);
-                const x = Math.cos(currentPos.lat) * Math.sin(nextPt.lat) - Math.sin(currentPos.lat) * Math.cos(nextPt.lat) * Math.cos(nextPt.lng - currentPos.lng);
-                bearing = Math.atan2(y, x) * 180 / Math.PI;
+                const lat1 = currentPos.lat * Math.PI / 180;
+                const lat2 = nextPt.lat * Math.PI / 180;
+                const dLng = (nextPt.lng - currentPos.lng) * Math.PI / 180;
+                
+                const y = Math.sin(dLng) * Math.cos(lat2);
+                const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+                bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
             }
             
             updateTelemetry(currentPos.lat, currentPos.lng, speedKmh, bearing);
