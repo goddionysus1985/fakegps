@@ -71,6 +71,10 @@ const mapLayers = {
         maxZoom: 20,
         className: 'map-light-tiles'
     }),
+    google: L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google Maps',
+        maxZoom: 20
+    }),
     osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
@@ -120,7 +124,7 @@ document.getElementById('map-style-select').value = savedStyle;
 // Custom pulses/markers
 const pulseIcon = L.divIcon({
     className: 'custom-pulse-marker',
-    html: `<div class="marker-pulse"></div><div class="marker-core"></div>`,
+    html: `<div class="marker-beam"></div><div class="marker-pulse"></div><div class="marker-core"></div>`,
     iconSize: [20, 20],
     iconAnchor: [10, 10]
 });
@@ -144,21 +148,34 @@ style.innerHTML = `
     justify-content: center;
 }
 .marker-core {
-    width: 12px;
-    height: 12px;
-    background-color: var(--primary);
+    width: 14px;
+    height: 14px;
+    background-color: #007aff;
     border: 2px solid white;
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
-    z-index: 2;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    z-index: 3;
 }
 .marker-pulse {
     position: absolute;
-    width: 28px;
-    height: 28px;
-    background-color: rgba(99, 102, 241, 0.4);
+    width: 32px;
+    height: 32px;
+    background-color: rgba(0, 122, 255, 0.22);
     border-radius: 50%;
-    animation: markerPulse 1.6s infinite ease-out;
+    animation: markerPulse 2s infinite ease-out;
+    z-index: 2;
+}
+.marker-beam {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(0deg, rgba(0, 122, 255, 0.4) 0%, rgba(0, 122, 255, 0) 80%);
+    clip-path: polygon(50% 100%, 15% 0%, 85% 0%);
+    bottom: 50%;
+    left: calc(50% - 40px);
+    transform-origin: 50% 100%;
+    display: none;
+    pointer-events: none;
     z-index: 1;
 }
 @keyframes markerPulse {
@@ -199,6 +216,23 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
     elAccuracy.innerHTML = `${STATE.accuracy} <span class="unit">м</span>`;
     
     mainMarker.setLatLng([STATE.lat, STATE.lng]);
+    
+    // Rotate and show/hide heading beam like iOS
+    const markerEl = mainMarker.getElement();
+    if (markerEl) {
+        const beamEl = markerEl.querySelector('.marker-beam');
+        const pulseEl = markerEl.querySelector('.marker-pulse');
+        if (beamEl) {
+            if (STATE.speed > 0) {
+                beamEl.style.display = 'block';
+                beamEl.style.transform = `rotate(${STATE.heading}deg)`;
+                if (pulseEl) pulseEl.style.display = 'none';
+            } else {
+                beamEl.style.display = 'none';
+                if (pulseEl) pulseEl.style.display = 'block';
+            }
+        }
+    }
     
     // Update Override script
     elCodeBlock.textContent = `// Скрипт подмены Geolocation API
