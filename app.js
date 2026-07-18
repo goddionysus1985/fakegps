@@ -350,6 +350,20 @@ tabs.forEach(tab => {
 
         document.getElementById(`mode-${mode}-panel`).classList.remove('hidden');
 
+        // Manage indicators and actions
+        if (mode !== 'route') {
+            clearRoute();
+        }
+        if (mode === 'joystick') {
+            startJoystickLoop();
+            elStatus.textContent = "Режим управления: Джойстик / WASD";
+        } else {
+            stopJoystickLoop();
+            if (mode === 'static') elStatus.textContent = "Симуляция активна (Статично)";
+            else elStatus.textContent = "Режим маршрута";
+        }
+
+        updateTelemetry(STATE.lat, STATE.lng, 0);
     });
 });
 
@@ -680,7 +694,7 @@ btnStartRoute.addEventListener('click', () => {
             }
 
             updateTelemetry(currentPos.lat, currentPos.lng, speedKmh, bearing);
-            map.panTo(currentPos, { animate: false });
+            map.panTo(currentPos);
         }, intervalMs);
     }
     lucide.createIcons();
@@ -838,7 +852,7 @@ function startJoystickLoop() {
             const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
 
             updateTelemetry(newLat, newLng, speedKmh, angle);
-            map.panTo([newLat, newLng], { animate: false });
+            map.panTo([newLat, newLng]);
         } else {
             // Decelerating if not moving
             if (STATE.speed > 0) {
