@@ -780,17 +780,24 @@ const keysDown = {};
 document.addEventListener('keydown', (e) => {
     if (STATE.activeMode !== 'joystick') return;
     
+    const key = e.key.toLowerCase();
+    const code = e.code.toLowerCase();
+    
     // Prevent default scroll actions
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'].includes(e.key.toLowerCase())) {
+    if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(key) || ['keyw', 'keya', 'keys', 'keyd'].includes(code)) {
         if (document.activeElement.tagName !== 'INPUT') {
             e.preventDefault();
-            keysDown[e.key.toLowerCase()] = true;
+            keysDown[key] = true;
+            keysDown[code] = true;
         }
     }
 });
 
 document.addEventListener('keyup', (e) => {
-    keysDown[e.key.toLowerCase()] = false;
+    const key = e.key.toLowerCase();
+    const code = e.code.toLowerCase();
+    keysDown[key] = false;
+    keysDown[code] = false;
 });
 
 // Joystick updates frame loop
@@ -812,10 +819,19 @@ function startJoystickLoop() {
         let dy = STATE.joyDelta.y;
         
         // Add keyboard influence if keyboard inputs are active
-        if (keysDown['w'] || keysDown['arrowup']) dy = -1;
-        if (keysDown['s'] || keysDown['arrowdown']) dy = 1;
-        if (keysDown['a'] || keysDown['arrowleft']) dx = -1;
-        if (keysDown['d'] || keysDown['arrowright']) dx = 1;
+        let kx = 0;
+        let ky = 0;
+        if (keysDown['w'] || keysDown['arrowup'] || keysDown['keyw']) ky -= 1;
+        if (keysDown['s'] || keysDown['arrowdown'] || keysDown['keys']) ky += 1;
+        if (keysDown['a'] || keysDown['arrowleft'] || keysDown['keya']) kx -= 1;
+        if (keysDown['d'] || keysDown['arrowright'] || keysDown['keyd']) kx += 1;
+        
+        if (kx !== 0 || ky !== 0) {
+            // Normalize keyboard input vector to ensure perfect diagonal motion
+            const len = Math.sqrt(kx * kx + ky * ky);
+            dx = kx / len;
+            dy = ky / len;
+        }
         
         const isMoving = dx !== 0 || dy !== 0;
         
