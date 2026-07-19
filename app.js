@@ -130,8 +130,8 @@ document.getElementById('map-style-select').value = savedStyle;
 const pulseIcon = L.divIcon({
     className: 'custom-pulse-marker',
     html: `<div class="marker-beam"></div><div class="marker-pulse"></div><div class="marker-core"></div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14]
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
 });
 
 // Primary navigation marker
@@ -153,18 +153,18 @@ style.innerHTML = `
     justify-content: center;
 }
 .marker-core {
-    width: 20px;
-    height: 20px;
+    width: 17px;
+    height: 17px;
     background-color: #007aff;
-    border: 2.5px solid white;
+    border: 2px solid white;
     border-radius: 50%;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
     z-index: 3;
 }
 .marker-pulse {
     position: absolute;
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
     background-color: rgba(0, 122, 255, 0.22);
     border-radius: 50%;
     animation: markerPulse 2s infinite ease-out;
@@ -172,12 +172,12 @@ style.innerHTML = `
 }
 .marker-beam {
     position: absolute;
-    width: 110px;
-    height: 110px;
+    width: 95px;
+    height: 95px;
     background: linear-gradient(0deg, rgba(0, 122, 255, 0.4) 0%, rgba(0, 122, 255, 0) 80%);
     clip-path: polygon(50% 100%, 15% 0%, 85% 0%);
     bottom: 50%;
-    left: calc(50% - 55px);
+    left: calc(50% - 47.5px);
     transform-origin: 50% 100%;
     display: none;
     pointer-events: none;
@@ -311,8 +311,8 @@ function handleRouteMapClick(latlng) {
             icon: L.divIcon({
                 className: 'custom-pulse-marker',
                 html: `<div class="marker-pulse" style="background-color: rgba(249, 115, 22, 0.4)"></div><div class="marker-core" style="background-color: #f97316"></div>`,
-                iconSize: [28, 28],
-                iconAnchor: [14, 14]
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
             })
         }).addTo(map);
         elStatus.textContent = "Точка старта выбрана. Выберите точку финиша (клик 2)";
@@ -326,8 +326,8 @@ function handleRouteMapClick(latlng) {
             icon: L.divIcon({
                 className: 'custom-pulse-marker',
                 html: `<div class="marker-pulse" style="background-color: rgba(16, 185, 129, 0.4)"></div><div class="marker-core" style="background-color: var(--accent)"></div>`,
-                iconSize: [28, 28],
-                iconAnchor: [14, 14]
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
             })
         }).addTo(map);
         btnDrawRoute.disabled = false;
@@ -521,8 +521,8 @@ function setRouteDestination(latlng) {
         icon: L.divIcon({
             className: 'custom-pulse-marker',
             html: `<div class="marker-pulse" style="background-color: rgba(16, 185, 129, 0.4)"></div><div class="marker-core" style="background-color: var(--accent)"></div>`,
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
         })
     }).addTo(map);
 
