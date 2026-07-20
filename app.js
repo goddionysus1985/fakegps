@@ -83,7 +83,6 @@ function createMapboxLayer(styleId) {
 // Map styles
 const mapLayers = {
     mapboxLight: createMapboxLayer('light-v11'),
-    mapboxStreets: createMapboxLayer('streets-v12'),
     google: L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=en&gl=US&x={x}&y={y}&z={z}&scale=2', {
         attribution: '&copy; Google Maps',
         maxZoom: 20,
@@ -936,8 +935,7 @@ if (mapboxTokenInput) {
             mapboxToken = '';
         }
         mapLayers.mapboxLight = createMapboxLayer('light-v11');
-        mapLayers.mapboxStreets = createMapboxLayer('streets-v12');
-        if (mapStyleSelect.value === 'mapboxLight' || mapStyleSelect.value === 'mapboxStreets') {
+        if (mapStyleSelect.value === 'mapboxLight') {
             switchMapLayer(mapStyleSelect.value);
         }
     });

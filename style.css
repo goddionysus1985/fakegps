@@ -831,9 +831,10 @@ body.dark-mode .leaflet-bar a:hover {
     filter: brightness(2.2) contrast(1.4) saturate(1.2) !important;
 }
 
-/* Enhance contrast and readability of light maps */
-.map-light-tiles {
-    filter: contrast(1.15) brightness(0.95) saturate(1.1) !important;
+/* Enhance contrast and tame map brightness for eye comfort */
+.map-light-tiles,
+.leaflet-tile-pane {
+    filter: contrast(1.08) brightness(0.88) saturate(0.95);
 }
 
 /* Sidebar Footer / Author Credit */
