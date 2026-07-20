@@ -60,29 +60,18 @@ const map = L.map('map', {
     attributionControl: true
 }).setView([STATE.lat, STATE.lng], 13);
 
-// Mapbox Access Token (User configurable)
-let mapboxToken = localStorage.getItem('fakegps_mapbox_token') || '';
-
-function createMapboxLayer(styleId) {
-    if (!mapboxToken) {
-        // Fallback clean Apple-like map if no Mapbox token is provided
-        return L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        });
-    }
-    return L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/${styleId}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`, {
-        attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 20,
-        tileSize: 256,
-        zoomOffset: 0
-    });
-}
-
-// Map styles
+// Map styles (Clean, keyless Apple Style Light & Dark layers)
 const mapLayers = {
-    mapboxLight: createMapboxLayer('light-v11'),
+    mapboxLight: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }),
+    mapboxDark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }),
     google: L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=en&gl=US&x={x}&y={y}&z={z}&scale=2', {
         attribution: '&copy; Google Maps',
         maxZoom: 20,
@@ -875,9 +864,17 @@ themeToggle.addEventListener('click', () => {
     if (isDark) {
         themeIconSun.classList.remove('hidden');
         themeIconMoon.classList.add('hidden');
+        if (mapStyleSelect.value === 'mapboxLight') {
+            mapStyleSelect.value = 'mapboxDark';
+            switchMapLayer('mapboxDark');
+        }
     } else {
         themeIconSun.classList.add('hidden');
         themeIconMoon.classList.remove('hidden');
+        if (mapStyleSelect.value === 'mapboxDark') {
+            mapStyleSelect.value = 'mapboxLight';
+            switchMapLayer('mapboxLight');
+        }
     }
 });
 
@@ -902,29 +899,6 @@ function switchMapLayer(styleName) {
 mapStyleSelect.addEventListener('change', (e) => {
     switchMapLayer(e.target.value);
 });
-
-// Mapbox Token Input Handler
-const mapboxTokenInput = document.getElementById('mapbox-token-input');
-if (mapboxTokenInput) {
-    const customToken = localStorage.getItem('fakegps_mapbox_token');
-    if (customToken) {
-        mapboxTokenInput.value = customToken;
-    }
-    mapboxTokenInput.addEventListener('change', (e) => {
-        const val = e.target.value.trim();
-        if (val) {
-            mapboxToken = val;
-            localStorage.setItem('fakegps_mapbox_token', val);
-        } else {
-            localStorage.removeItem('fakegps_mapbox_token');
-            mapboxToken = '';
-        }
-        mapLayers.mapboxLight = createMapboxLayer('light-v11');
-        if (mapStyleSelect.value === 'mapboxLight') {
-            switchMapLayer(mapStyleSelect.value);
-        }
-    });
-}
 
 // Load bookmarks on load
 loadBookmarks();
