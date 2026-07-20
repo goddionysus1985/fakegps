@@ -941,3 +941,677 @@ mapStyleSelect.addEventListener('change', (e) => {
 
 // Load bookmarks on load
 loadBookmarks();
+
+// ==========================================
+// TOP NAVBAR / TOOL VIEW SWITCHER
+// ==========================================
+const navBtnFakeGPS = document.getElementById('nav-btn-fakegps');
+const navBtnCompatibility = document.getElementById('nav-btn-compatibility');
+const viewFakeGPS = document.getElementById('view-fakegps');
+const viewCompatibility = document.getElementById('view-compatibility');
+
+function switchToolView(viewName) {
+    if (viewName === 'fakegps') {
+        navBtnFakeGPS.classList.add('active');
+        navBtnCompatibility.classList.remove('active');
+
+        viewFakeGPS.classList.remove('hidden');
+        viewFakeGPS.classList.add('active');
+
+        viewCompatibility.classList.add('hidden');
+        viewCompatibility.classList.remove('active');
+
+        localStorage.setItem('multitool_active_view', 'fakegps');
+
+        // Refresh Leaflet map size on view switch
+        setTimeout(() => {
+            if (map) map.invalidateSize();
+        }, 100);
+    } else if (viewName === 'compatibility') {
+        navBtnCompatibility.classList.add('active');
+        navBtnFakeGPS.classList.remove('active');
+
+        viewCompatibility.classList.remove('hidden');
+        viewCompatibility.classList.add('active');
+
+        viewFakeGPS.classList.add('hidden');
+        viewFakeGPS.classList.remove('active');
+
+        localStorage.setItem('multitool_active_view', 'compatibility');
+    }
+}
+
+if (navBtnFakeGPS) {
+    navBtnFakeGPS.addEventListener('click', () => switchToolView('fakegps'));
+}
+if (navBtnCompatibility) {
+    navBtnCompatibility.addEventListener('click', () => switchToolView('compatibility'));
+}
+
+// Restore saved view or default to FakeGPS
+const savedView = localStorage.getItem('multitool_active_view') || 'fakegps';
+switchToolView(savedView);
+
+
+// ==========================================
+// COMPATIBILITY TESTER MODULE
+// ==========================================
+(function initCompatibilityTester() {
+    // Inputs
+    const manNameInput = document.getElementById('man-name');
+    const manAgeInput = document.getElementById('man-age');
+    const manPhotoInput = document.getElementById('man-photo');
+    const womanNameInput = document.getElementById('woman-name');
+    const womanAgeInput = document.getElementById('woman-age');
+    const womanPhotoInput = document.getElementById('woman-photo');
+    const compatibilityInput = document.getElementById('compatibility-pct');
+
+    // Displays & Bars
+    const pctDisplay = document.getElementById('pct-display');
+    const imgMan = document.getElementById('img-man');
+    const imgWoman = document.getElementById('img-woman');
+    const labelMan = document.getElementById('label-man');
+    const labelWoman = document.getElementById('label-woman');
+    const barManComp = document.querySelector('#bar-man .compatibility');
+    const barWomanComp = document.querySelector('#bar-woman .compatibility');
+
+    // Indicators
+    const indMan = document.getElementById('ind-man');
+    const indWoman = document.getElementById('ind-woman');
+
+    // Theme Switcher Logic inside Compatibility view
+    const themeBtns = document.querySelectorAll('#view-compatibility .theme-btn');
+    let currentTheme = localStorage.getItem('compatibility_theme') || 'midnight';
+
+    function setCompatibilityTheme(theme) {
+        if (!viewCompatibility) return;
+
+        // Reset theme classes on body
+        document.body.classList.remove('theme-slate', 'theme-vibrant');
+        if (theme !== 'midnight') {
+            document.body.classList.add(`theme-${theme}`);
+        }
+
+        themeBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === theme);
+        });
+
+        localStorage.setItem('compatibility_theme', theme);
+        setTimeout(updateBars, 50); // Small delay to let CSS variables update
+    }
+
+    themeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            setCompatibilityTheme(btn.dataset.theme);
+        });
+    });
+
+    // Handle initial theme state
+    setCompatibilityTheme(currentTheme);
+
+    function updateBars() {
+        if (!compatibilityInput) return;
+
+        let percentage = parseFloat(compatibilityInput.value) || 0;
+        if (percentage < 90) {
+            percentage = Math.round(percentage);
+            compatibilityInput.value = percentage;
+        }
+
+        const manName = manNameInput ? manNameInput.value || 'Man' : 'Man';
+        const manAge = manAgeInput ? manAgeInput.value || '0' : '0';
+        const manPhoto = manPhotoInput ? manPhotoInput.value.trim() : '';
+        const womanName = womanNameInput ? womanNameInput.value || 'Woman' : 'Woman';
+        const womanAge = womanAgeInput ? womanAgeInput.value || '0' : '0';
+        const womanPhoto = womanPhotoInput ? womanPhotoInput.value.trim() : '';
+
+        // Calculate dynamic color based on theme
+        let hueEnd = 120; // Emerald (Midnight)
+        if (document.body.classList.contains('theme-slate')) { hueEnd = 240; } // Indigo
+        if (document.body.classList.contains('theme-vibrant')) { hueEnd = 340; } // Rose
+
+        const hue = Math.floor((percentage / 100) * hueEnd);
+        const color = `hsl(${hue}, 80%, 45%)`;
+        const colorGlow = `hsl(${hue}, 80%, 45%, 0.4)`;
+
+        const displayPercentage = percentage >= 90 ? percentage.toFixed(1) : percentage;
+
+        // Update Text
+        if (pctDisplay) {
+            pctDisplay.textContent = `${displayPercentage}%`;
+            pctDisplay.style.color = color;
+            if (percentage > 50) {
+                pctDisplay.style.textShadow = `0 0 20px ${colorGlow}`;
+            } else {
+                pctDisplay.style.textShadow = `none`;
+            }
+        }
+
+        if (labelMan) labelMan.textContent = `${manName}, ${manAge}`;
+        if (labelWoman) labelWoman.textContent = `${womanName}, ${womanAge}`;
+
+        if (imgMan) {
+            if (manPhoto) {
+                imgMan.src = manPhoto;
+                imgMan.style.display = 'block';
+            } else {
+                imgMan.style.display = 'none';
+                imgMan.src = '';
+            }
+        }
+
+        if (imgWoman) {
+            if (womanPhoto) {
+                imgWoman.src = womanPhoto;
+                imgWoman.style.display = 'block';
+            } else {
+                imgWoman.style.display = 'none';
+                imgWoman.src = '';
+            }
+        }
+
+        // Update Bars
+        if (barManComp) {
+            barManComp.style.height = `${percentage}%`;
+            barManComp.style.background = color;
+        }
+        if (barWomanComp) {
+            barWomanComp.style.height = `${percentage}%`;
+            barWomanComp.style.background = color;
+        }
+
+        // Update Indicators
+        if (indMan) {
+            indMan.textContent = `${displayPercentage}%`;
+            indMan.style.bottom = `${percentage}%`;
+            indMan.style.background = color;
+        }
+        if (indWoman) {
+            indWoman.textContent = `${displayPercentage}%`;
+            indWoman.style.bottom = `${percentage}%`;
+            indWoman.style.background = color;
+        }
+    }
+
+    // Event Listeners
+    [manNameInput, manAgeInput, manPhotoInput, womanNameInput, womanAgeInput, womanPhotoInput, compatibilityInput].forEach(input => {
+        if (input) input.addEventListener('input', updateBars);
+    });
+
+
+    // ==========================================
+    // HEART COLLAGE OVERLAY LOGIC
+    // ==========================================
+
+    const btnOpenCollage = document.getElementById('btn-open-collage');
+    const btnCloseCollage = document.getElementById('btn-close-collage');
+    const collageOverlay = document.getElementById('collage-overlay');
+    const collageParticlesContainer = document.getElementById('collage-particles-container');
+    const btnExportCollage = document.getElementById('btn-export-collage');
+
+    // Controls
+    const collageManNameInput = document.getElementById('collage-man-name');
+    const collageManAgeInput = document.getElementById('collage-man-age');
+    const collageManPhotoInput = document.getElementById('collage-man-photo');
+    const collageWomanNameInput = document.getElementById('collage-woman-name');
+    const collageWomanAgeInput = document.getElementById('collage-woman-age');
+    const collageWomanPhotoInput = document.getElementById('collage-woman-photo');
+    const collageCompatibilityPctInput = document.getElementById('collage-compatibility-pct');
+
+    // File inputs
+    const fileManPhoto = document.getElementById('file-man-photo');
+    const fileWomanPhoto = document.getElementById('file-woman-photo');
+
+    // Frames
+    const frameManCollage = document.getElementById('frame-man-collage');
+    const frameWomanCollage = document.getElementById('frame-woman-collage');
+
+    // Display Elements
+    const collageRenderCard = document.getElementById('collage-render-card');
+    const displayImgMan = document.getElementById('display-img-man');
+    const displayImgWoman = document.getElementById('display-img-woman');
+    const displayNameMan = document.getElementById('display-name-man');
+    const displayAgeMan = document.getElementById('display-age-man');
+    const displayNameWoman = document.getElementById('display-name-woman');
+    const displayAgeWoman = document.getElementById('display-age-woman');
+
+    const glowBtns = document.querySelectorAll('.glow-btn');
+
+    let particleInterval = null;
+    let localManPhotoSrc = '';
+    let localWomanPhotoSrc = '';
+
+    // Initialize Collage Card Theme Class
+    let currentCollageTheme = 'rose';
+    if (collageRenderCard) {
+        collageRenderCard.className = 'collage-card glow-rose';
+    }
+
+    // Toggle Collage View
+    if (btnOpenCollage) {
+        btnOpenCollage.addEventListener('click', () => {
+            if (collageOverlay) {
+                collageOverlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Sync data from main page
+                syncDataFromMain();
+
+                // Start background floating hearts particle system
+                startParticles();
+
+                // Trigger an initial burst of hearts in the overlay
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => spawnParticle(), i * 150);
+                }
+
+                // Staggered merging hearts stream from avatars to the center badge on launch!
+                setTimeout(() => {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            if (frameManCollage) launchMergingHeart(frameManCollage);
+                        }, i * 250);
+                        setTimeout(() => {
+                            if (frameWomanCollage) launchMergingHeart(frameWomanCollage);
+                        }, i * 250 + 120);
+                    }
+                }, 400);
+            }
+        });
+    }
+
+    if (btnCloseCollage) {
+        btnCloseCollage.addEventListener('click', () => {
+            if (collageOverlay) {
+                collageOverlay.style.display = 'none';
+                document.body.style.overflow = '';
+                stopParticles();
+            }
+        });
+    }
+
+    function syncDataFromMain() {
+        const percentage = compatibilityInput ? compatibilityInput.value : 0;
+        const manName = manNameInput ? manNameInput.value.trim() : '';
+        const manAge = manAgeInput ? manAgeInput.value : '';
+        const manPhoto = manPhotoInput ? manPhotoInput.value.trim() : '';
+        const womanName = womanNameInput ? womanNameInput.value.trim() : '';
+        const womanAge = womanAgeInput ? womanAgeInput.value : '';
+        const womanPhoto = womanPhotoInput ? womanPhotoInput.value.trim() : '';
+
+        // Update Customizer form fields
+        if (collageManNameInput) collageManNameInput.value = manName || 'Mike';
+        if (collageManAgeInput) collageManAgeInput.value = manAge || '28';
+        if (collageManPhotoInput) collageManPhotoInput.value = manPhoto === 'Local Uploaded File' ? '' : manPhoto;
+        if (collageWomanNameInput) collageWomanNameInput.value = womanName || 'Inna';
+        if (collageWomanAgeInput) collageWomanAgeInput.value = womanAge || '25';
+        if (collageWomanPhotoInput) collageWomanPhotoInput.value = womanPhoto === 'Local Uploaded File' ? '' : womanPhoto;
+        if (collageCompatibilityPctInput) collageCompatibilityPctInput.value = percentage;
+
+        updateCollageManPhoto(localManPhotoSrc || manPhoto);
+        updateCollageWomanPhoto(localWomanPhotoSrc || womanPhoto);
+
+        updateCollagePreviewText();
+
+        let matchedTheme = 'rose';
+        if (document.body.classList.contains('theme-slate')) { matchedTheme = 'sapphire'; }
+        else if (document.body.classList.contains('theme-vibrant')) { matchedTheme = 'rose'; }
+        else { matchedTheme = 'emerald'; }
+
+        setCollageTheme(matchedTheme);
+    }
+
+    function setCollageTheme(color) {
+        if (!collageRenderCard) return;
+        collageRenderCard.className = `collage-card glow-${color}`;
+        currentCollageTheme = color;
+
+        glowBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === color);
+        });
+    }
+
+    glowBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setCollageTheme(btn.dataset.color);
+            spawnHeartBurst(btn, 6);
+        });
+    });
+
+    function updateCollageManPhoto(src) {
+        const placeholder = frameManCollage ? frameManCollage.querySelector('.heart-placeholder') : null;
+        if (displayImgMan) {
+            if (src) {
+                displayImgMan.src = src;
+                displayImgMan.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            } else {
+                displayImgMan.style.display = 'none';
+                displayImgMan.src = '';
+                if (placeholder) placeholder.style.display = 'flex';
+            }
+        }
+    }
+
+    function updateCollageWomanPhoto(src) {
+        const placeholder = frameWomanCollage ? frameWomanCollage.querySelector('.heart-placeholder') : null;
+        if (displayImgWoman) {
+            if (src) {
+                displayImgWoman.src = src;
+                displayImgWoman.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            } else {
+                displayImgWoman.style.display = 'none';
+                displayImgWoman.src = '';
+                if (placeholder) placeholder.style.display = 'flex';
+            }
+        }
+    }
+
+    function syncToMainForm() {
+        if (manNameInput && collageManNameInput) manNameInput.value = collageManNameInput.value;
+        if (manAgeInput && collageManAgeInput) manAgeInput.value = collageManAgeInput.value;
+        if (womanNameInput && collageWomanNameInput) womanNameInput.value = collageWomanNameInput.value;
+        if (womanAgeInput && collageWomanAgeInput) womanAgeInput.value = collageWomanAgeInput.value;
+
+        if (manPhotoInput && collageManPhotoInput) {
+            manPhotoInput.value = collageManPhotoInput.value.trim();
+        }
+        if (womanPhotoInput && collageWomanPhotoInput) {
+            womanPhotoInput.value = collageWomanPhotoInput.value.trim();
+        }
+
+        updateBars();
+    }
+
+    function updateCollagePreviewText() {
+        if (displayNameMan && collageManNameInput) {
+            displayNameMan.textContent = collageManNameInput.value || 'Man';
+        }
+        if (displayAgeMan && collageManAgeInput) {
+            const ageVal = collageManAgeInput.value;
+            displayAgeMan.textContent = ageVal ? `Age ${ageVal}` : '';
+        }
+
+        if (displayNameWoman && collageWomanNameInput) {
+            displayNameWoman.textContent = collageWomanNameInput.value || 'Woman';
+        }
+        if (displayAgeWoman && collageWomanAgeInput) {
+            const ageVal = collageWomanAgeInput.value;
+            displayAgeWoman.textContent = ageVal ? `Age ${ageVal}` : '';
+        }
+
+        syncToMainForm();
+    }
+
+    [collageManNameInput, collageManAgeInput, collageWomanNameInput, collageWomanAgeInput].forEach(input => {
+        if (input) input.addEventListener('input', updateCollagePreviewText);
+    });
+
+    if (collageManPhotoInput) {
+        collageManPhotoInput.addEventListener('input', () => {
+            localManPhotoSrc = '';
+            updateCollageManPhoto(collageManPhotoInput.value.trim());
+            syncToMainForm();
+        });
+    }
+
+    if (collageWomanPhotoInput) {
+        collageWomanPhotoInput.addEventListener('input', () => {
+            localWomanPhotoSrc = '';
+            updateCollageWomanPhoto(collageWomanPhotoInput.value.trim());
+            syncToMainForm();
+        });
+    }
+
+    let alternateMergeSide = true;
+    let lastLaunchTime = 0;
+    if (collageCompatibilityPctInput) {
+        collageCompatibilityPctInput.addEventListener('input', () => {
+            let val = parseFloat(collageCompatibilityPctInput.value);
+            if (val < 90) {
+                val = Math.round(val);
+                collageCompatibilityPctInput.value = val;
+            }
+
+            if (compatibilityInput) {
+                compatibilityInput.value = val;
+            }
+
+            updateBars();
+
+            if (val > 0) {
+                const now = Date.now();
+                if (now - lastLaunchTime > 60) {
+                    if (alternateMergeSide && frameManCollage) {
+                        launchMergingHeart(frameManCollage);
+                    } else if (!alternateMergeSide && frameWomanCollage) {
+                        launchMergingHeart(frameWomanCollage);
+                    }
+                    alternateMergeSide = !alternateMergeSide;
+                    lastLaunchTime = now;
+                }
+            }
+        });
+    }
+
+    if (frameManCollage && fileManPhoto) {
+        frameManCollage.addEventListener('click', () => fileManPhoto.click());
+    }
+    if (frameWomanCollage && fileWomanPhoto) {
+        frameWomanCollage.addEventListener('click', () => fileWomanPhoto.click());
+    }
+
+    if (fileManPhoto) {
+        fileManPhoto.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    localManPhotoSrc = event.target.result;
+                    updateCollageManPhoto(localManPhotoSrc);
+                    if (manPhotoInput) manPhotoInput.value = 'Local Uploaded File';
+                    if (collageManPhotoInput) collageManPhotoInput.value = '';
+                    if (imgMan) {
+                        imgMan.src = localManPhotoSrc;
+                        imgMan.style.display = 'block';
+                    }
+                    spawnHeartBurst(frameManCollage, 12);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (fileWomanPhoto) {
+        fileWomanPhoto.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    localWomanPhotoSrc = event.target.result;
+                    updateCollageWomanPhoto(localWomanPhotoSrc);
+                    if (womanPhotoInput) womanPhotoInput.value = 'Local Uploaded File';
+                    if (collageWomanPhotoInput) collageWomanPhotoInput.value = '';
+                    if (imgWoman) {
+                        imgWoman.src = localWomanPhotoSrc;
+                        imgWoman.style.display = 'block';
+                    }
+                    spawnHeartBurst(frameWomanCollage, 12);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (frameManCollage) {
+        frameManCollage.addEventListener('mouseenter', () => spawnHeartBurst(frameManCollage, 4));
+        frameManCollage.addEventListener('click', () => spawnHeartBurst(frameManCollage, 8));
+    }
+    if (frameWomanCollage) {
+        frameWomanCollage.addEventListener('mouseenter', () => spawnHeartBurst(frameWomanCollage, 4));
+        frameWomanCollage.addEventListener('click', () => spawnHeartBurst(frameWomanCollage, 8));
+    }
+
+    // PARTICLE ENGINE (Floating rising hearts)
+    const HEART_CHARACTERS = ['♥', '💖', '💕', '💙', '💜', '💚', '💛', '💗', '💓'];
+    const COLLAGE_THEME_COLORS = {
+        rose: ['#fda4af', '#f43f5e', '#ec4899', '#f472b6'],
+        amethyst: ['#d8b4fe', '#a855f7', '#c084fc', '#e9d5ff'],
+        emerald: ['#6ee7b7', '#10b981', '#34d399', '#a7f3d0'],
+        sapphire: ['#93c5fd', '#3b82f6', '#60a5fa', '#bfdbfe']
+    };
+
+    function startParticles() {
+        stopParticles();
+        particleInterval = setInterval(spawnParticle, 400);
+    }
+
+    function stopParticles() {
+        if (particleInterval) {
+            clearInterval(particleInterval);
+            particleInterval = null;
+        }
+        if (collageParticlesContainer) {
+            collageParticlesContainer.innerHTML = '';
+        }
+    }
+
+    function spawnParticle(xPercent = null, yPercent = null, customSize = null, customVel = null) {
+        if (!collageParticlesContainer) return;
+
+        const particle = document.createElement('div');
+        particle.className = 'heart-particle';
+        particle.textContent = HEART_CHARACTERS[Math.floor(Math.random() * HEART_CHARACTERS.length)];
+
+        const x = xPercent !== null ? xPercent : Math.random() * 100;
+        particle.style.left = `${x}%`;
+
+        if (yPercent !== null) {
+            particle.style.bottom = `${yPercent}%`;
+        }
+
+        const colors = COLLAGE_THEME_COLORS[currentCollageTheme] || COLLAGE_THEME_COLORS.rose;
+        particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+        const size = customSize !== null ? customSize : (12 + Math.random() * 24);
+        particle.style.fontSize = `${size}px`;
+
+        particle.style.transform = `rotate(${Math.random() * 40 - 20}deg)`;
+        particle.style.opacity = (0.2 + Math.random() * 0.5).toString();
+
+        const duration = customVel !== null ? customVel : (6 + Math.random() * 6);
+        particle.style.animationDuration = `${duration}s`;
+
+        collageParticlesContainer.appendChild(particle);
+
+        setTimeout(() => {
+            if (particle && particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, duration * 1000);
+    }
+
+    function spawnHeartBurst(element, count = 8) {
+        if (!collageParticlesContainer || !element) return;
+
+        const rect = element.getBoundingClientRect();
+        const containerRect = collageParticlesContainer.getBoundingClientRect();
+
+        const elCenterX = rect.left + rect.width / 2;
+        const elCenterY = rect.top + rect.height / 2;
+
+        const xPercent = ((elCenterX - containerRect.left) / containerRect.width) * 100;
+        const yPercent = 100 - (((elCenterY - containerRect.top) / containerRect.height) * 100);
+
+        for (let i = 0; i < count; i++) {
+            const size = 10 + Math.random() * 15;
+            const duration = 2 + Math.random() * 3;
+            const spreadX = xPercent + (Math.random() * 16 - 8);
+            spawnParticle(spreadX, yPercent, size, duration);
+        }
+    }
+
+    if (btnExportCollage) {
+        btnExportCollage.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    function triggerCenterBadgeSplash() {
+        const centerElement = document.querySelector('.central-glow-heart');
+        if (!centerElement || !collageParticlesContainer) return;
+
+        const rect = centerElement.getBoundingClientRect();
+        const containerRect = collageParticlesContainer.getBoundingClientRect();
+        const xPercent = ((rect.left + rect.width / 2 - containerRect.left) / containerRect.width) * 100;
+        const yPercent = 100 - (((rect.top + rect.height / 2 - containerRect.top) / containerRect.height) * 100);
+
+        centerElement.classList.add('pulse-active');
+        centerElement.style.transform = 'scale(1.25) rotate(8deg)';
+        setTimeout(() => {
+            centerElement.style.transform = '';
+            centerElement.classList.remove('pulse-active');
+        }, 180);
+
+        for (let i = 0; i < 5; i++) {
+            const size = 8 + Math.random() * 8;
+            const duration = 1 + Math.random() * 1.5;
+            const spreadX = xPercent + (Math.random() * 10 - 5);
+            spawnParticle(spreadX, yPercent, size, duration);
+        }
+    }
+
+    const MERGE_HEART_CHARACTERS = ['💖', '💕', '❤️', '💝', '💗', '💓'];
+    function launchMergingHeart(fromElement) {
+        if (!collageParticlesContainer || !fromElement) return;
+
+        const fromRect = fromElement.getBoundingClientRect();
+        const centerElement = document.querySelector('.central-glow-heart');
+        if (!centerElement) return;
+        const centerRect = centerElement.getBoundingClientRect();
+        const containerRect = collageParticlesContainer.getBoundingClientRect();
+
+        const startX = fromRect.left + fromRect.width / 2 - containerRect.left;
+        const startY = fromRect.top + fromRect.height / 2 - containerRect.top;
+
+        const targetX = centerRect.left + centerRect.width / 2 - containerRect.left;
+        const targetY = centerRect.top + centerRect.height / 2 - containerRect.top;
+
+        const heart = document.createElement('div');
+        heart.className = 'merging-heart-particle';
+        heart.textContent = MERGE_HEART_CHARACTERS[Math.floor(Math.random() * MERGE_HEART_CHARACTERS.length)];
+
+        const colors = COLLAGE_THEME_COLORS[currentCollageTheme] || COLLAGE_THEME_COLORS.rose;
+        heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+        const size = 16 + Math.random() * 10;
+        heart.style.fontSize = `${size}px`;
+
+        heart.style.left = `${startX - size / 2}px`;
+        heart.style.top = `${startY - size / 2}px`;
+
+        collageParticlesContainer.appendChild(heart);
+
+        heart.style.setProperty('--target-x', `${targetX - startX}px`);
+        heart.style.setProperty('--target-y', `${targetY - startY}px`);
+
+        const curveX = (Math.random() * 40 - 20);
+        const curveY = - (45 + Math.random() * 45);
+        heart.style.setProperty('--curve-x', `${curveX}px`);
+        heart.style.setProperty('--curve-y', `${curveY}px`);
+
+        heart.style.animation = 'mergeToCenter 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+
+        setTimeout(() => {
+            if (heart && heart.parentNode) {
+                heart.parentNode.removeChild(heart);
+            }
+            triggerCenterBadgeSplash();
+        }, 750);
+    }
+
+    updateBars();
+})();
+

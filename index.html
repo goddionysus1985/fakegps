@@ -28,179 +28,199 @@
 </head>
 
 <body>
-    <div class="app-container">
-        <!-- Sidebar Controls -->
-        <aside class="sidebar">
-            <header class="app-header">
-                <div class="logo-wrapper">
-                    <div class="pulse-indicator"></div>
-                    <img src="gps_logo.png" alt="Logo" class="logo-image">
-                    <h1>FakeGPS <span class="accent-text">Pro</span></h1>
+    <!-- Top Navigation Menu Bar -->
+    <header class="top-navbar">
+        <div class="nav-brand">
+            <img src="gps_logo.png" alt="Logo" class="nav-logo">
+            <span class="nav-title">Tool<span class="accent-text">Hub</span></span>
+        </div>
+        <nav class="nav-menu">
+            <button id="nav-btn-fakegps" class="nav-tab active" data-view="fakegps">
+                <i data-lucide="map-pin"></i>
+                <span>FakeGPS Pro</span>
+            </button>
+            <button id="nav-btn-compatibility" class="nav-tab" data-view="compatibility">
+                <i data-lucide="heart"></i>
+                <span>Compatibility Tester</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- TOOL VIEW 1: FAKEGPS PRO -->
+    <section id="view-fakegps" class="tool-view active">
+        <div class="app-container">
+            <!-- Sidebar Controls -->
+            <aside class="sidebar">
+                <header class="app-header">
+                    <div class="logo-wrapper">
+                        <div class="pulse-indicator"></div>
+                        <img src="gps_logo.png" alt="Logo" class="logo-image">
+                        <h1>FakeGPS <span class="accent-text">Pro</span></h1>
+                    </div>
+                    <div class="header-actions">
+                        <button id="theme-toggle" class="icon-btn" title="Переключить тему">
+                            <i data-lucide="sun" id="theme-icon-sun" class="hidden"></i>
+                            <i data-lucide="moon" id="theme-icon-moon"></i>
+                        </button>
+                    </div>
+                </header>
+                <div class="app-header-subtitle-wrapper">
+                    <p class="subtitle"></p>
                 </div>
-                <div class="header-actions">
-                    <button id="theme-toggle" class="icon-btn" title="Переключить тему">
-                        <i data-lucide="sun" id="theme-icon-sun" class="hidden"></i>
-                        <i data-lucide="moon" id="theme-icon-moon"></i>
-                    </button>
-                </div>
-            </header>
-            <div class="app-header-subtitle-wrapper">
-                <p class="subtitle"></p>
-            </div>
 
-            <div class="sidebar-scroll">
-                <!-- Map Layer Section -->
-                <section class="panel-section">
-                    <h3 class="section-title"><i data-lucide="layers"></i> Стиль карты</h3>
-                    <div class="control-row">
-                        <select id="map-style-select">
-                            <option value="light" selected>Карта (Светлая - Voyager)</option>
-                            <option value="positron">Карта (Светлая - Positron)</option>
-                            <option value="google">Карта (Google Maps)</option>
-                            <option value="osm">Карта (Стандартная OSM)</option>
-                            <option value="dark">Карта (Тёмная - Dark Matter)</option>
-                            <option value="satellite">Спутник (Гибрид)</option>
-                            <option value="esriStreet">Улицы Esri (World Street)</option>
-                            <option value="topo">Топографическая (OpenTopoMap)</option>
-                        </select>
-                    </div>
-                </section>
-                <!-- Search Section -->
-                <section class="panel-section">
-                    <div class="search-box">
-                        <i data-lucide="search" class="search-icon"></i>
-                        <input type="text" id="search-input" placeholder="Поиск локации или координаты...">
-                        <button id="search-btn" class="icon-btn" title="Искать"><i
-                                data-lucide="arrow-right"></i></button>
-                    </div>
-                </section>
-
-                <!-- Telemetry Dashboard -->
-                <section class="panel-section">
-                    <h3 class="section-title"><i data-lucide="activity"></i> Телеметрия</h3>
-                    <div class="telemetry-grid">
-                        <div class="telemetry-card">
-                            <span class="label">Широта (Lat)</span>
-                            <span class="value mono" id="val-lat">40.7580</span>
-                        </div>
-                        <div class="telemetry-card">
-                            <span class="label">Долгота (Lng)</span>
-                            <span class="value mono" id="val-lng">-73.9855</span>
-                        </div>
-                        <div class="telemetry-card">
-                            <span class="label">Скорость</span>
-                            <span class="value" id="val-speed">0.0 <span class="unit">км/ч</span></span>
-                        </div>
-                        <div class="telemetry-card">
-                            <span class="label">Направление</span>
-                            <span class="value" id="val-heading">0° <span class="unit">N</span></span>
-                        </div>
-                        <div class="telemetry-card">
-                            <span class="label">Высота (Alt)</span>
-                            <span class="value" id="val-alt">150 <span class="unit">м</span></span>
-                        </div>
-                        <div class="telemetry-card">
-                            <span class="label">Точность</span>
-                            <span class="value" id="val-accuracy">3 <span class="unit">м</span></span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Simulation Mode -->
-                <section class="panel-section">
-                    <h3 class="section-title"><i data-lucide="sliders"></i> Режим симуляции</h3>
-                    <div class="mode-tabs">
-                        <button class="tab-btn active" data-mode="static">
-                            <i data-lucide="navigation-2"></i> Статичный
-                        </button>
-                        <button class="tab-btn" data-mode="route">
-                            <i data-lucide="milestone"></i> Маршрут
-                        </button>
-                        <button class="tab-btn" data-mode="joystick">
-                            <i data-lucide="gamepad-2"></i> Джойстик
-                        </button>
-                    </div>
-
-                    <!-- Mode Contents -->
-                    <div class="tab-content" id="mode-static-panel">
-                        <p class="panel-desc">Нажмите в любое место на карте, чтобы мгновенно переместить виртуальное
-                            местоположение.</p>
-                        <div class="btn-group">
-                            <button id="btn-teleport-home" class="btn btn-secondary">
-                                <i data-lucide="home"></i> Домой
-                            </button>
-                            <button id="btn-bookmark-current" class="btn btn-secondary">
-                                <i data-lucide="bookmark"></i> Сохранить
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="tab-content hidden" id="mode-route-panel">
-                        <p class="panel-desc">Выберите две точки или проложите авто-маршрут.</p>
-                        <div class="route-controls">
-                            <div class="control-row">
-                                <label for="route-speed">Скорость симуляции:</label>
-                                <select id="route-speed">
-                                    <option value="5">Пешком (5 км/ч)</option>
-                                    <option value="15">Велосипед (15 км/ч)</option>
-                                    <option value="60" selected>Автомобиль (60 км/ч)</option>
-                                    <option value="120">Трасса (120 км/ч)</option>
-                                    <option value="500">Самолёт (500 км/ч)</option>
-                                </select>
-                            </div>
-                            <div class="btn-group">
-                                <button id="btn-draw-route" class="btn btn-primary">
-                                    <i data-lucide="route"></i> Построить маршрут
-                                </button>
-                                <button id="btn-clear-route" class="btn btn-secondary">
-                                    <i data-lucide="trash-2"></i> Очистить
-                                </button>
-                            </div>
-                            <div class="btn-group">
-                                <button id="btn-start-route" class="btn btn-accent" disabled>
-                                    <i data-lucide="play"></i> Запуск
-                                </button>
-                                <button id="btn-pause-route" class="btn btn-secondary" disabled>
-                                    <i data-lucide="pause"></i> Пауза
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-content hidden" id="mode-joystick-panel">
-                        <p class="panel-desc">Управляйте маркером с помощью WASD / стрелок на клавиатуре или
-                            виртуального джойстика ниже.</p>
-
-                        <div class="joystick-wrapper">
-                            <div class="joystick-base" id="joy-base">
-                                <div class="joystick-stick" id="joy-stick"></div>
-                            </div>
-                        </div>
-
+                <div class="sidebar-scroll">
+                    <!-- Map Layer Section -->
+                    <section class="panel-section">
+                        <h3 class="section-title"><i data-lucide="layers"></i> Стиль карты</h3>
                         <div class="control-row">
-                            <label for="joystick-speed">Скорость движения:</label>
-                            <input type="range" id="joystick-speed" min="5" max="150" value="30">
-                            <span id="joystick-speed-val" class="mono">30 км/ч</span>
+                            <select id="map-style-select">
+                                <option value="light" selected>Карта (Светлая - Voyager)</option>
+                                <option value="positron">Карта (Светлая - Positron)</option>
+                                <option value="google">Карта (Google Maps)</option>
+                                <option value="osm">Карта (Стандартная OSM)</option>
+                                <option value="dark">Карта (Тёмная - Dark Matter)</option>
+                                <option value="satellite">Спутник (Гибрид)</option>
+                                <option value="esriStreet">Улицы Esri (World Street)</option>
+                                <option value="topo">Топографическая (OpenTopoMap)</option>
+                            </select>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                    <!-- Search Section -->
+                    <section class="panel-section">
+                        <div class="search-box">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" id="search-input" placeholder="Поиск локации или координаты...">
+                            <button id="search-btn" class="icon-btn" title="Искать"><i
+                                    data-lucide="arrow-right"></i></button>
+                        </div>
+                    </section>
 
-                <!-- Bookmarked Locations -->
-                <section class="panel-section">
-                    <h3 class="section-title"><i data-lucide="bookmark-check"></i> Сохраненные точки</h3>
-                    <ul class="bookmarks-list" id="bookmarks-list">
-                        <!-- Bookmarks injected here dynamically -->
-                        <li class="empty-list-msg">Нет сохраненных локаций</li>
-                    </ul>
-                </section>
+                    <!-- Telemetry Dashboard -->
+                    <section class="panel-section">
+                        <h3 class="section-title"><i data-lucide="activity"></i> Телеметрия</h3>
+                        <div class="telemetry-grid">
+                            <div class="telemetry-card">
+                                <span class="label">Широта (Lat)</span>
+                                <span class="value mono" id="val-lat">40.7580</span>
+                            </div>
+                            <div class="telemetry-card">
+                                <span class="label">Долгота (Lng)</span>
+                                <span class="value mono" id="val-lng">-73.9855</span>
+                            </div>
+                            <div class="telemetry-card">
+                                <span class="label">Скорость</span>
+                                <span class="value" id="val-speed">0.0 <span class="unit">км/ч</span></span>
+                            </div>
+                            <div class="telemetry-card">
+                                <span class="label">Направление</span>
+                                <span class="value" id="val-heading">0° <span class="unit">N</span></span>
+                            </div>
+                            <div class="telemetry-card">
+                                <span class="label">Высота (Alt)</span>
+                                <span class="value" id="val-alt">150 <span class="unit">м</span></span>
+                            </div>
+                            <div class="telemetry-card">
+                                <span class="label">Точность</span>
+                                <span class="value" id="val-accuracy">3 <span class="unit">м</span></span>
+                            </div>
+                        </div>
+                    </section>
 
-                <!-- Developer Integration -->
-                <section class="panel-section">
-                    <h3 class="section-title"><i data-lucide="terminal"></i> Интеграция в браузер</h3>
-                    <p class="panel-desc">Скопируйте этот скрипт и выполните его в консоли (F12) любой вкладки, чтобы
-                        подменить координаты в реальном времени:</p>
-                    <div class="code-block-wrapper">
-                        <pre><code id="override-script-code">
+                    <!-- Simulation Mode -->
+                    <section class="panel-section">
+                        <h3 class="section-title"><i data-lucide="sliders"></i> Режим симуляции</h3>
+                        <div class="mode-tabs">
+                            <button class="tab-btn active" data-mode="static">
+                                <i data-lucide="navigation-2"></i> Статичный
+                            </button>
+                            <button class="tab-btn" data-mode="route">
+                                <i data-lucide="milestone"></i> Маршрут
+                            </button>
+                            <button class="tab-btn" data-mode="joystick">
+                                <i data-lucide="gamepad-2"></i> Джойстик
+                            </button>
+                        </div>
+
+                        <!-- Mode Contents -->
+                        <div class="tab-content" id="mode-static-panel">
+                            <p class="panel-desc">Нажмите в любое место на карте, чтобы мгновенно переместить виртуальное
+                                местоположение.</p>
+                            <div class="btn-group">
+                                <button id="btn-teleport-home" class="btn btn-secondary">
+                                    <i data-lucide="home"></i> Домой
+                                </button>
+                                <button id="btn-bookmark-current" class="btn btn-secondary">
+                                    <i data-lucide="bookmark"></i> Сохранить
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="mode-route-panel">
+                            <p class="panel-desc">Выберите две точки или проложите авто-маршрут.</p>
+                            <div class="route-controls">
+                                <div class="control-row">
+                                    <label for="route-speed">Скорость симуляции:</label>
+                                    <select id="route-speed">
+                                        <option value="5">Пешком (5 км/ч)</option>
+                                        <option value="15">Велосипед (15 км/ч)</option>
+                                        <option value="60" selected>Автомобиль (60 км/ч)</option>
+                                        <option value="120">Трасса (120 км/ч)</option>
+                                        <option value="500">Самолёт (500 км/ч)</option>
+                                    </select>
+                                </div>
+                                <div class="btn-group">
+                                    <button id="btn-draw-route" class="btn btn-primary">
+                                        <i data-lucide="route"></i> Построить маршрут
+                                    </button>
+                                    <button id="btn-clear-route" class="btn btn-secondary">
+                                        <i data-lucide="trash-2"></i> Очистить
+                                    </button>
+                                </div>
+                                <div class="btn-group">
+                                    <button id="btn-start-route" class="btn btn-accent" disabled>
+                                        <i data-lucide="play"></i> Запуск
+                                    </button>
+                                    <button id="btn-pause-route" class="btn btn-secondary" disabled>
+                                        <i data-lucide="pause"></i> Пауза
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="mode-joystick-panel">
+                            <p class="panel-desc">Управляйте маркером с помощью WASD / стрелок на клавиатуре или
+                                виртуального джойстика ниже.</p>
+
+                            <div class="joystick-wrapper">
+                                <div class="joystick-base" id="joy-base">
+                                    <div class="joystick-stick" id="joy-stick"></div>
+                                </div>
+                            </div>
+
+                            <div class="control-row">
+                                <label for="joystick-speed">Скорость движения:</label>
+                                <input type="range" id="joystick-speed" min="5" max="150" value="30">
+                                <span id="joystick-speed-val" class="mono">30 км/ч</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Bookmarked Locations -->
+                    <section class="panel-section">
+                        <h3 class="section-title"><i data-lucide="bookmark-check"></i> Сохраненные точки</h3>
+                        <ul class="bookmarks-list" id="bookmarks-list">
+                            <!-- Bookmarks injected here dynamically -->
+                            <li class="empty-list-msg">Нет сохраненных локаций</li>
+                        </ul>
+                    </section>
+
+                    <!-- Developer Integration -->
+                    <section class="panel-section">
+                        <h3 class="section-title"><i data-lucide="terminal"></i> Интеграция в браузер</h3>
+                        <p class="panel-desc">Скопируйте этот скрипт и выполните его в консоли (F12) любой вкладки, чтобы
+                            подменить координаты в реальном времени:</p>
+                        <div class="code-block-wrapper">
+                            <pre><code id="override-script-code">
 // Скрипт подмены Geolocation API
 const mockLat = 55.7558;
 const mockLng = 37.6173;
@@ -217,36 +237,279 @@ navigator.geolocation.getCurrentPosition = (success) => {
     timestamp: Date.now()
   });
 };
-                        </code></pre>
-                        <button id="btn-copy-code" class="btn btn-small">
-                            <i data-lucide="copy"></i> Копировать
+                            </code></pre>
+                            <button id="btn-copy-code" class="btn btn-small">
+                                <i data-lucide="copy"></i> Копировать
+                            </button>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Author credit -->
+                <div class="sidebar-footer">
+                    <a href="https://t.me/sk8b14ck" target="_blank" rel="noopener" class="author-credit">
+                        <i data-lucide="send"></i>
+                        <span>by <strong>sk8b14ck</strong></span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Map Container -->
+            <main class="map-view">
+                <div id="map"></div>
+
+                <!-- Quick HUD layer on map -->
+                <div class="map-hud">
+                    <div class="hud-item">
+                        <div class="hud-dot active"></div>
+                        <span id="hud-status">Симуляция активна (Статично)</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- TOOL VIEW 2: COMPATIBILITY TESTER -->
+    <section id="view-compatibility" class="tool-view hidden">
+        <div class="background-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+
+        <div class="theme-switcher">
+            <button class="theme-btn active" id="btn-midnight" data-theme="midnight" title="Midnight Drive">🌑</button>
+            <button class="theme-btn" id="btn-slate" data-theme="slate" title="Grey Slate">🩶</button>
+            <button class="theme-btn" id="btn-vibrant" data-theme="vibrant" title="Vibrant Glow">✨</button>
+        </div>
+
+        <main class="container compatibility-container">
+            <section class="config-card">
+                <h1>Compatibility <span class="accent">Tester</span></h1>
+                <p class="subtitle">Analyze the connection between two individuals.</p>
+
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="man-name">Man's Name</label>
+                        <input type="text" id="man-name" placeholder="e.g. Mike" value="">
+                    </div>
+                    <div class="input-group">
+                        <label for="man-age">Man's Age</label>
+                        <input type="number" id="man-age" placeholder="0" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="man-photo">Man's Photo Link</label>
+                        <input type="text" id="man-photo" placeholder="Image URL..." value="">
+                    </div>
+                    <div class="input-group">
+                        <label for="woman-name">Woman's Name</label>
+                        <input type="text" id="woman-name" placeholder="e.g. Inna" value="">
+                    </div>
+                    <div class="input-group">
+                        <label for="woman-age">Woman's Age</label>
+                        <input type="number" id="woman-age" placeholder="0" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="woman-photo">Woman's Photo Link</label>
+                        <input type="text" id="woman-photo" placeholder="Image URL..." value="">
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="compatibility-pct">Compatibility Percentage</label>
+                        <input type="range" id="compatibility-pct" min="0" max="100" step="0.1" value="0">
+                        <span id="pct-display">0%</span>
+                    </div>
+                    <div class="input-group full-width action-group" style="margin-top: 1rem; align-items: center;">
+                        <button type="button" id="btn-open-collage" class="collage-trigger-btn">
+                            <span>🔑 Create Heart Collage</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="results-container">
+                <div class="chart-wrapper">
+                    <div class="y-axis">
+                        <span>100</span>
+                        <span>80</span>
+                        <span>60</span>
+                        <span>40</span>
+                        <span>20</span>
+                        <span>0</span>
+                    </div>
+                    <div class="chart-area">
+                        <div class="grid-lines">
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                        </div>
+                        <div class="bars">
+                            <div class="bar-container">
+                                <div class="pct-indicator" id="ind-man">0%</div>
+                                <div class="bar" id="bar-man">
+                                    <div class="remaining"></div>
+                                    <div class="compatibility">
+                                        <img id="img-man" class="bar-photo" src="" alt="Man's Photo" style="display: none;">
+                                        <span id="label-man">Man, 0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="pct-indicator" id="ind-woman">0%</div>
+                                <div class="bar" id="bar-woman">
+                                    <div class="remaining"></div>
+                                    <div class="compatibility">
+                                        <img id="img-woman" class="bar-photo" src="" alt="Woman's Photo" style="display: none;">
+                                        <span id="label-woman">Woman, 0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="dot compatibility-dot"></span>
+                        <span>Compatibility</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="dot remaining-dot"></span>
+                        <span>Remaining</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- SVG Clip Path Definition -->
+        <svg width="0" height="0" style="position: absolute;">
+            <defs>
+                <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
+                    <path
+                        d="M0.5,0.9 C0.438,0.84 0.23,0.647 0.1,0.5 C0.015,0.38 0,0.298 0,0.19 C0,0.086 0.084,0 0.188,0 C0.246,0 0.301,0.027 0.338,0.07 C0.406,0.127 0.462,0.19 0.5,0.22 C0.538,0.19 0.594,0.127 0.662,0.07 C0.699,0.027 0.754,0 0.812,0 C0.916,0 1,0.086 1,0.19 C1,0.298 0.985,0.38 0.9,0.5 C0.77,0.647 0.562,0.84 0.5,0.9 Z" />
+                </clipPath>
+            </defs>
+        </svg>
+
+        <!-- Fullscreen Collage Overlay -->
+        <div id="collage-overlay" class="collage-overlay" style="display: none;">
+            <div class="overlay-header">
+                <button id="btn-close-collage" class="close-btn" title="Go Back">✕</button>
+            </div>
+
+            <div class="collage-workspace">
+                <!-- Left Panel: Customizer Controls -->
+                <section class="controls-panel card-glass">
+                    <h2>Customize Collage</h2>
+                    <p class="panel-desc">Fine-tune the display. Click directly on the heart shapes in the canvas to upload custom photos.</p>
+
+                    <div class="control-group">
+                        <label for="collage-compatibility-pct">Compatibility Percentage</label>
+                        <input type="range" id="collage-compatibility-pct" min="0" max="100" step="0.1" value="0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Collage Glow Theme</label>
+                        <div class="glow-selector">
+                            <button class="glow-btn active" data-color="rose" style="--color-preview: #f43f5e;"></button>
+                            <button class="glow-btn" data-color="amethyst" style="--color-preview: #a855f7;"></button>
+                            <button class="glow-btn" data-color="emerald" style="--color-preview: #10b981;"></button>
+                            <button class="glow-btn" data-color="sapphire" style="--color-preview: #3b82f6;"></button>
+                        </div>
+                    </div>
+
+                    <div class="control-group text-inputs-row">
+                        <div class="mini-group">
+                            <label for="collage-man-name">Man's Name</label>
+                            <input type="text" id="collage-man-name" placeholder="Name">
+                        </div>
+                        <div class="mini-group">
+                            <label for="collage-man-age">Age</label>
+                            <input type="number" id="collage-man-age" placeholder="Age">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="collage-man-photo">Man's Photo Link (URL)</label>
+                        <input type="text" id="collage-man-photo" placeholder="Image URL...">
+                    </div>
+
+                    <div class="control-group text-inputs-row">
+                        <div class="mini-group">
+                            <label for="collage-woman-name">Woman's Name</label>
+                            <input type="text" id="collage-woman-name" placeholder="Name">
+                        </div>
+                        <div class="mini-group">
+                            <label for="collage-woman-age">Age</label>
+                            <input type="number" id="collage-woman-age" placeholder="Age">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="collage-woman-photo">Woman's Photo Link (URL)</label>
+                        <input type="text" id="collage-woman-photo" placeholder="Image URL...">
+                    </div>
+
+                    <!-- Hidden inputs for file uploads -->
+                    <input type="file" id="file-man-photo" accept="image/*" style="display: none;">
+                    <input type="file" id="file-woman-photo" accept="image/*" style="display: none;">
+
+                    <div class="actions-row">
+                        <button id="btn-export-collage" class="action-btn-primary">
+                            ✨ Save / Print Collage
                         </button>
                     </div>
                 </section>
-            </div>
 
-            <!-- Author credit -->
-            <div class="sidebar-footer">
-                <a href="https://t.me/sk8b14ck" target="_blank" rel="noopener" class="author-credit">
-                    <i data-lucide="send"></i>
-                    <span>by <strong>sk8b14ck</strong></span>
-                </a>
-            </div>
-        </aside>
+                <!-- Right Panel: Main Collage Canvas -->
+                <div class="collage-canvas-container">
+                    <div class="collage-card" id="collage-render-card">
+                        <!-- Dynamic glow ring -->
+                        <div class="collage-glow-ring"></div>
+                        <div class="collage-particles" id="collage-particles-container"></div>
 
-        <!-- Map Container -->
-        <main class="map-view">
-            <div id="map"></div>
+                        <div class="collage-hearts-row">
+                            <!-- Left Heart: Man -->
+                            <div class="heart-frame-wrapper" id="wrapper-man-collage">
+                                <div class="heart-frame" id="frame-man-collage" title="Click to upload Man's Photo">
+                                    <div class="heart-placeholder">
+                                        <span class="upload-icon">📷</span>
+                                        <span class="upload-text">Man's Photo</span>
+                                    </div>
+                                    <img id="display-img-man" src="" alt="Man's Connection" class="heart-img" style="display: none;">
+                                </div>
+                                <div class="heart-caption">
+                                    <span id="display-name-man" class="heart-name">Man</span>
+                                    <span id="display-age-man" class="heart-age">Age 0</span>
+                                </div>
+                            </div>
 
-            <!-- Quick HUD layer on map -->
-            <div class="map-hud">
-                <div class="hud-item">
-                    <div class="hud-dot active"></div>
-                    <span id="hud-status">Симуляция активна (Статично)</span>
+                            <!-- Center Link: Badge -->
+                            <div class="collage-divider">
+                                <div class="central-glow-heart">
+                                    <span class="heart-icon-badge">🔑</span>
+                                </div>
+                            </div>
+
+                            <!-- Right Heart: Woman -->
+                            <div class="heart-frame-wrapper" id="wrapper-woman-collage">
+                                <div class="heart-frame" id="frame-woman-collage" title="Click to upload Woman's Photo">
+                                    <div class="heart-placeholder">
+                                        <span class="upload-icon">📷</span>
+                                        <span class="upload-text">Woman's Photo</span>
+                                    </div>
+                                    <img id="display-img-woman" src="" alt="Woman's Connection" class="heart-img" style="display: none;">
+                                </div>
+                                <div class="heart-caption">
+                                    <span id="display-name-woman" class="heart-name">Woman</span>
+                                    <span id="display-age-woman" class="heart-age">Age 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </section>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
