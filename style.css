@@ -1032,16 +1032,16 @@ body.theme-vibrant #view-compatibility {
     background: var(--card-bg);
     backdrop-filter: blur(16px);
     border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 2rem;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     width: 100%;
 }
 
 .config-card h1 {
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
     letter-spacing: -0.02em;
 }
 
@@ -1052,14 +1052,14 @@ body.theme-vibrant #view-compatibility {
 
 .config-card .subtitle {
     color: var(--text-secondary);
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
 }
 
 .input-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    gap: 0.75rem 1rem;
 }
 
 @media (max-width: 850px) {
@@ -1077,7 +1077,7 @@ body.theme-vibrant #view-compatibility {
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .full-width {
@@ -1085,7 +1085,7 @@ body.theme-vibrant #view-compatibility {
 }
 
 .input-group label {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -1096,11 +1096,11 @@ body.theme-vibrant #view-compatibility {
 #view-compatibility input[type="number"] {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
     color: var(--text-primary);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.88rem;
     transition: all 0.3s ease;
     width: 100%;
 }
@@ -1317,11 +1317,11 @@ body.theme-vibrant #view-compatibility {
 .collage-trigger-btn {
     background: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);
     border: none;
-    border-radius: 12px;
-    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
     color: #ffffff;
     font-family: inherit;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
@@ -1330,7 +1330,7 @@ body.theme-vibrant #view-compatibility {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     position: relative;
     overflow: hidden;
 }
