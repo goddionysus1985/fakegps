@@ -721,30 +721,25 @@ joySpeedSlider.addEventListener('input', (e) => {
 // Joystick Drag
 let stickMaxRadius = 45; // limit drag boundary
 
-joyStick.addEventListener('mousedown', initJoystickDrag);
-joyStick.addEventListener('touchstart', initJoystickDrag, { passive: true });
+// Apple Design: Use Pointer Events for 1:1 tracking even outside bounds
+joyStick.addEventListener('pointerdown', initJoystickDrag);
 
 function initJoystickDrag(e) {
     e.preventDefault();
     STATE.joyActive = true;
-    document.addEventListener('mousemove', dragJoystick);
-    document.addEventListener('mouseup', endJoystickDrag);
-    document.addEventListener('touchmove', dragJoystick, { passive: false });
-    document.addEventListener('touchend', endJoystickDrag);
+    joyStick.classList.add('dragging');
+    joyStick.setPointerCapture(e.pointerId);
+    
+    document.addEventListener('pointermove', dragJoystick);
+    document.addEventListener('pointerup', endJoystickDrag);
+    document.addEventListener('pointercancel', endJoystickDrag);
 }
 
 function dragJoystick(e) {
     if (!STATE.joyActive) return;
 
-    let clientX, clientY;
-    if (e.touches) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-        e.preventDefault();
-    } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-    }
+    let clientX = e.clientX;
+    let clientY = e.clientY;
 
     const rect = joyBase.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -767,14 +762,19 @@ function dragJoystick(e) {
     STATE.joyDelta.y = deltaY / stickMaxRadius;
 }
 
-function endJoystickDrag() {
+function endJoystickDrag(e) {
     STATE.joyActive = false;
+    joyStick.classList.remove('dragging');
+    if (e && e.pointerId) {
+        try { joyStick.releasePointerCapture(e.pointerId); } catch(err) {}
+    }
+    
     joyStick.style.transform = `translate(0px, 0px)`;
     STATE.joyDelta = { x: 0, y: 0 };
-    document.removeEventListener('mousemove', dragJoystick);
-    document.removeEventListener('mouseup', endJoystickDrag);
-    document.removeEventListener('touchmove', dragJoystick);
-    document.removeEventListener('touchend', endJoystickDrag);
+    
+    document.removeEventListener('pointermove', dragJoystick);
+    document.removeEventListener('pointerup', endJoystickDrag);
+    document.removeEventListener('pointercancel', endJoystickDrag);
 }
 
 // Keyboards controls (WASD/Arrows)

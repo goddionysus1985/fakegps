@@ -1907,3 +1907,47 @@ body.theme-vibrant #view-compatibility {
         print-color-adjust: exact;
     }
 }
+/* ==========================================================================
+   APPLE DESIGN (FLUID INTERFACES) OVERRIDES
+   ========================================================================== */
+
+/* 1. Response - kill latency */
+.nav-tab:active:not(:disabled),
+.tab-btn:active:not(:disabled),
+.btn:active:not(:disabled),
+.icon-btn:active:not(:disabled),
+.telemetry-card:active:not(:disabled),
+.bookmark-item:active:not(:disabled),
+.theme-btn:active:not(:disabled),
+.collage-trigger-btn:active:not(:disabled),
+.close-btn:active:not(:disabled),
+.glow-btn:active:not(:disabled),
+.heart-frame:active:not(:disabled),
+.author-credit:active:not(:disabled) {
+    transform: scale(0.95) !important;
+    transition: transform 100ms ease-out !important;
+}
+
+/* 4. Behavior over animation - use springs (CSS approximation for critically damped spring) */
+.nav-tab,
+.tab-btn,
+.btn,
+.icon-btn,
+.telemetry-card,
+.bookmark-item,
+.theme-btn,
+.collage-trigger-btn,
+.close-btn,
+.glow-btn,
+.heart-frame,
+.author-credit {
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+/* Smooth transitions on joystick return */
+.joystick-stick {
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+.joystick-stick.dragging {
+    transition: none !important;
+}
