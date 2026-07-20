@@ -60,20 +60,30 @@ const map = L.map('map', {
     attributionControl: true
 }).setView([STATE.lat, STATE.lng], 13);
 
-// Different map styles
+// Mapbox Access Token (User configurable)
+let mapboxToken = localStorage.getItem('fakegps_mapbox_token') || '';
+
+function createMapboxLayer(styleId) {
+    if (!mapboxToken) {
+        // Fallback clean Apple-like map if no Mapbox token is provided
+        return L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        });
+    }
+    return L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/${styleId}/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`, {
+        attribution: '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 20,
+        tileSize: 256,
+        zoomOffset: 0
+    });
+}
+
+// Map styles
 const mapLayers = {
-    light: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20,
-        className: 'map-light-tiles'
-    }),
-    positron: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20,
-        className: 'map-light-tiles'
-    }),
+    mapboxLight: createMapboxLayer('light-v11'),
+    mapboxStreets: createMapboxLayer('streets-v12'),
     google: L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=en&gl=US&x={x}&y={y}&z={z}&scale=2', {
         attribution: '&copy; Google Maps',
         maxZoom: 20,
@@ -84,19 +94,6 @@ const mapLayers = {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
     }),
-    dark: L.layerGroup([
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }),
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20,
-            className: 'high-contrast-dark-labels'
-        })
-    ]),
     satellite: L.layerGroup([
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
@@ -107,24 +104,16 @@ const mapLayers = {
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Labels &copy; Esri'
         })
-    ]),
-    esriStreet: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        maxZoom: 19
-    }),
-    topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
-        maxZoom: 17
-    })
+    ])
 };
 
 // Set saved or default layer
-const savedStyle = localStorage.getItem('fakegps_map_style') || 'light';
-let currentLayer = mapLayers[savedStyle] || mapLayers.light;
+const savedStyle = localStorage.getItem('fakegps_map_style') || 'mapboxLight';
+let currentLayer = mapLayers[savedStyle] || mapLayers.mapboxLight;
 currentLayer.addTo(map);
 
 // Update style select dropdown to match
-document.getElementById('map-style-select').value = savedStyle;
+document.getElementById('map-style-select').value = mapLayers[savedStyle] ? savedStyle : 'mapboxLight';
 
 // Custom pulses/markers
 const pulseIcon = L.divIcon({
@@ -902,18 +891,9 @@ themeToggle.addEventListener('click', () => {
     if (isDark) {
         themeIconSun.classList.remove('hidden');
         themeIconMoon.classList.add('hidden');
-        // If user is switching to dark mode dashboard, we can optionally switch map style to dark too
-        if (mapStyleSelect.value === 'light' || mapStyleSelect.value === 'positron') {
-            mapStyleSelect.value = 'dark';
-            switchMapLayer('dark');
-        }
     } else {
         themeIconSun.classList.add('hidden');
         themeIconMoon.classList.remove('hidden');
-        if (mapStyleSelect.value === 'dark') {
-            mapStyleSelect.value = 'light';
-            switchMapLayer('light');
-        }
     }
 });
 
@@ -938,6 +918,30 @@ function switchMapLayer(styleName) {
 mapStyleSelect.addEventListener('change', (e) => {
     switchMapLayer(e.target.value);
 });
+
+// Mapbox Token Input Handler
+const mapboxTokenInput = document.getElementById('mapbox-token-input');
+if (mapboxTokenInput) {
+    const customToken = localStorage.getItem('fakegps_mapbox_token');
+    if (customToken) {
+        mapboxTokenInput.value = customToken;
+    }
+    mapboxTokenInput.addEventListener('change', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+            mapboxToken = val;
+            localStorage.setItem('fakegps_mapbox_token', val);
+        } else {
+            localStorage.removeItem('fakegps_mapbox_token');
+            mapboxToken = '';
+        }
+        mapLayers.mapboxLight = createMapboxLayer('light-v11');
+        mapLayers.mapboxStreets = createMapboxLayer('streets-v12');
+        if (mapStyleSelect.value === 'mapboxLight' || mapStyleSelect.value === 'mapboxStreets') {
+            switchMapLayer(mapStyleSelect.value);
+        }
+    });
+}
 
 // Load bookmarks on load
 loadBookmarks();

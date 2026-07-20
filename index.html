@@ -74,15 +74,15 @@
                         <h3 class="section-title"><i data-lucide="layers"></i> Стиль карты</h3>
                         <div class="control-row">
                             <select id="map-style-select">
-                                <option value="light" selected>Карта (Светлая - Voyager)</option>
-                                <option value="positron">Карта (Светлая - Positron)</option>
+                                <option value="mapboxLight" selected>Карта (Apple Style - Mapbox Light)</option>
+                                <option value="mapboxStreets">Карта (Apple Style - Mapbox Streets)</option>
                                 <option value="google">Карта (Google Maps)</option>
                                 <option value="osm">Карта (Стандартная OSM)</option>
-                                <option value="dark">Карта (Тёмная - Dark Matter)</option>
                                 <option value="satellite">Спутник (Гибрид)</option>
-                                <option value="esriStreet">Улицы Esri (World Street)</option>
-                                <option value="topo">Топографическая (OpenTopoMap)</option>
                             </select>
+                            <div class="control-row mapbox-token-row" style="margin-top: 6px;">
+                                <input type="text" id="mapbox-token-input" placeholder="Ваш Mapbox Token (опционально)..." style="font-size: 0.78rem; padding: 6px 10px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); width: 100%;">
+                            </div>
                         </div>
                     </section>
                     <!-- Search Section -->
