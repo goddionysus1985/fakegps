@@ -998,6 +998,86 @@ switchToolView(savedView);
     // Handle initial theme state
     setCompatibilityTheme(currentTheme);
 
+    function updateAuraAndBiorhythms(manName, manAge, womanName, womanAge, basePct) {
+        const elOrb = document.getElementById('aura-orb');
+        const elAuraTitle = document.getElementById('aura-title');
+        const elAuraDesc = document.getElementById('aura-desc');
+
+        const elBioValPhysical = document.getElementById('bio-val-physical');
+        const elBioValEmotional = document.getElementById('bio-val-emotional');
+        const elBioValIntellectual = document.getElementById('bio-val-intellectual');
+
+        const elBioBarPhysical = document.getElementById('bio-bar-physical');
+        const elBioBarEmotional = document.getElementById('bio-bar-emotional');
+        const elBioBarIntellectual = document.getElementById('bio-bar-intellectual');
+
+        if (!elOrb || !elBioValPhysical) return;
+
+        // Hash function for deterministic calculation from names
+        const str = (manName + womanName).toLowerCase().replace(/\s+/g, '');
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
+            hash |= 0;
+        }
+        const seed = Math.abs(hash);
+
+        // Biorhythms calculation
+        const mAge = parseInt(manAge) || 20;
+        const wAge = parseInt(womanAge) || 20;
+        const ageFactor = (mAge + wAge) % 50;
+
+        let phys = Math.round(Math.abs(Math.sin((seed % 23 + ageFactor) * 0.2)) * 40 + (basePct * 0.6));
+        let emot = Math.round(Math.abs(Math.sin((seed % 28 + ageFactor) * 0.18)) * 40 + (basePct * 0.6));
+        let intel = Math.round(Math.abs(Math.sin((seed % 33 + ageFactor) * 0.15)) * 40 + (basePct * 0.6));
+
+        if (str.length === 0) { phys = 50; emot = 50; intel = 50; }
+
+        phys = Math.min(100, Math.max(10, phys));
+        emot = Math.min(100, Math.max(10, emot));
+        intel = Math.min(100, Math.max(10, intel));
+
+        if (elBioValPhysical) elBioValPhysical.textContent = `${phys}%`;
+        if (elBioValEmotional) elBioValEmotional.textContent = `${emot}%`;
+        if (elBioValIntellectual) elBioValIntellectual.textContent = `${intel}%`;
+
+        if (elBioBarPhysical) elBioBarPhysical.style.width = `${phys}%`;
+        if (elBioBarEmotional) elBioBarEmotional.style.width = `${emot}%`;
+        if (elBioBarIntellectual) elBioBarIntellectual.style.width = `${intel}%`;
+
+        // Dynamic Aura Colors
+        const hue1 = (seed * 137) % 360;
+        const hue2 = (hue1 + 70) % 360;
+        const hue3 = (hue2 + 90) % 360;
+
+        elOrb.style.background = `radial-gradient(circle at 30% 30%, hsl(${hue1}, 85%, 60%), hsl(${hue2}, 85%, 55%), hsl(${hue3}, 85%, 45%))`;
+        elOrb.style.boxShadow = `0 0 25px hsl(${hue1}, 85%, 50%, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4)`;
+
+        const mName = manName ? manName : '';
+        const wName = womanName ? womanName : '';
+        const hasNames = mName || wName;
+
+        let moodTitle = '✨ Космический Резонанс';
+        let moodDesc = `Энергетическое поле пары ${mName} и ${wName} формирует чистый сине-фиолетовый поток высокой вибрации.`;
+
+        if (basePct > 80) {
+            moodTitle = '🔥 Огненная Синхронность';
+            moodDesc = `Невероятный всплеск ауры! ${hasNames ? `${mName} и ${wName}` : 'Пара'} создают мощный резонансный импульс страсти.`;
+        } else if (basePct > 50) {
+            moodTitle = '✨ Гармоничный Поток';
+            moodDesc = `Энергии ${hasNames ? `${mName} и ${wName}` : 'партнеров'} дополняют друг друга, образуя сбалансированное ментальное поле.`;
+        } else if (str.length > 0) {
+            moodTitle = '⚡ Интригующий Потенциал';
+            moodDesc = `Аура парадоксальна: ${hasNames ? `${mName} и ${wName}` : 'партнеры'} притягиваются по принципу противоположностей.`;
+        } else {
+            moodTitle = '🌌 Ожидание ввода';
+            moodDesc = 'Введите имена пары, чтобы рассчитать энергетическую ауру и биоритмы.';
+        }
+
+        if (elAuraTitle) elAuraTitle.textContent = moodTitle;
+        if (elAuraDesc) elAuraDesc.textContent = moodDesc;
+    }
+
     function updateBars() {
         if (!compatibilityInput) return;
 
@@ -1080,6 +1160,15 @@ switchToolView(savedView);
             indWoman.style.bottom = `${percentage}%`;
             indWoman.style.background = color;
         }
+
+        // Update Aura & Biorhythms dynamically on every input
+        updateAuraAndBiorhythms(
+            manNameInput ? manNameInput.value.trim() : '',
+            manAge,
+            womanNameInput ? womanNameInput.value.trim() : '',
+            womanAge,
+            percentage
+        );
     }
 
     // Event Listeners

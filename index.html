@@ -372,6 +372,59 @@ navigator.geolocation.getCurrentPosition = (success) => {
                     </div>
                 </div>
             </section>
+
+            <!-- Aura & Biorhythm Synergy Extensions -->
+            <section class="synergy-grid">
+                <!-- Aura & Mood Matcher -->
+                <div class="synergy-card aura-card">
+                    <div class="synergy-header">
+                        <h3><span class="sparkle">✨</span> Aura & Mood Matcher</h3>
+                    </div>
+                    <div class="aura-display">
+                        <div class="aura-orb" id="aura-orb"></div>
+                        <div class="aura-info">
+                            <span class="aura-title" id="aura-title">Cosmic Harmony</span>
+                            <p class="aura-desc" id="aura-desc">Введите имена для расчета энергетической ауры пары.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Biorhythm Synergy -->
+                <div class="synergy-card bio-card">
+                    <div class="synergy-header">
+                        <h3><span class="sparkle">🌊</span> Biorhythm Synergy</h3>
+                    </div>
+                    <div class="biorhythm-list">
+                        <div class="bio-item">
+                            <div class="bio-label">
+                                <span>💪 Физическая</span>
+                                <span class="bio-val" id="bio-val-physical">0%</span>
+                            </div>
+                            <div class="bio-bar-track">
+                                <div class="bio-bar-fill bio-physical" id="bio-bar-physical" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="bio-item">
+                            <div class="bio-label">
+                                <span>💖 Эмоциональная</span>
+                                <span class="bio-val" id="bio-val-emotional">0%</span>
+                            </div>
+                            <div class="bio-bar-track">
+                                <div class="bio-bar-fill bio-emotional" id="bio-bar-emotional" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="bio-item">
+                            <div class="bio-label">
+                                <span>🧠 Интеллектуальная</span>
+                                <span class="bio-val" id="bio-val-intellectual">0%</span>
+                            </div>
+                            <div class="bio-bar-track">
+                                <div class="bio-bar-fill bio-intellectual" id="bio-bar-intellectual" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- SVG Clip Path Definition -->
