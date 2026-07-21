@@ -41,6 +41,7 @@ const STATE = {
     joyPos: { x: 0, y: 0 },
     joyDelta: { x: 0, y: 0 },
     joySpeed: 30, // km/h
+    joyFollowMap: localStorage.getItem('fakegps_joy_follow') !== 'false',
     joyAnimationId: null
 };
 
@@ -692,6 +693,16 @@ joySpeedSlider.addEventListener('input', (e) => {
     localStorage.setItem('fakegps_joy_speed', STATE.joySpeed);
 });
 
+// Joystick Follow Map Toggle
+const joyFollowCheckbox = document.getElementById('joystick-follow-map');
+if (joyFollowCheckbox) {
+    joyFollowCheckbox.checked = STATE.joyFollowMap;
+    joyFollowCheckbox.addEventListener('change', (e) => {
+        STATE.joyFollowMap = e.target.checked;
+        localStorage.setItem('fakegps_joy_follow', STATE.joyFollowMap);
+    });
+}
+
 // Joystick Drag
 let stickMaxRadius = 45; // limit drag boundary
 
@@ -828,7 +839,9 @@ function startJoystickLoop() {
             const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
 
             updateTelemetry(newLat, newLng, speedKmh, angle);
-            map.panTo([newLat, newLng]);
+            if (STATE.joyFollowMap) {
+                map.panTo([newLat, newLng]);
+            }
         } else {
             // Decelerating if not moving
             if (STATE.speed > 0) {
