@@ -60,14 +60,9 @@ const map = L.map('map', {
     attributionControl: true
 }).setView([STATE.lat, STATE.lng], 13);
 
-// Map styles (Clean, keyless Apple Style Light & Dark layers)
+// Map styles (Clean, keyless Apple Style layer)
 const mapLayers = {
     mapboxLight: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
-    }),
-    mapboxDark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
@@ -864,17 +859,9 @@ themeToggle.addEventListener('click', () => {
     if (isDark) {
         themeIconSun.classList.remove('hidden');
         themeIconMoon.classList.add('hidden');
-        if (mapStyleSelect.value === 'mapboxLight') {
-            mapStyleSelect.value = 'mapboxDark';
-            switchMapLayer('mapboxDark');
-        }
     } else {
         themeIconSun.classList.add('hidden');
         themeIconMoon.classList.remove('hidden');
-        if (mapStyleSelect.value === 'mapboxDark') {
-            mapStyleSelect.value = 'mapboxLight';
-            switchMapLayer('mapboxLight');
-        }
     }
 });
 
