@@ -161,7 +161,7 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
     elLat.textContent = STATE.lat.toFixed(6);
     elLng.textContent = STATE.lng.toFixed(6);
 
-    elSpeed.innerHTML = `${STATE.speed.toFixed(1)} <span class="unit">км/ч</span>`;
+    elSpeed.innerHTML = `${STATE.speed.toFixed(1)} <span class="unit">km/h</span>`;
 
     // Heading direction
     let dir = 'N';
@@ -174,8 +174,8 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
     else if (STATE.heading > 292.5 && STATE.heading <= 337.5) dir = 'NW';
 
     elHeading.innerHTML = `${STATE.heading}° <span class="unit">${dir}</span>`;
-    elAlt.innerHTML = `${STATE.alt} <span class="unit">м</span>`;
-    elAccuracy.innerHTML = `${STATE.accuracy} <span class="unit">м</span>`;
+    elAlt.innerHTML = `${STATE.alt} <span class="unit">m</span>`;
+    elAccuracy.innerHTML = `${STATE.accuracy} <span class="unit">m</span>`;
 
     mainMarker.setLatLng([STATE.lat, STATE.lng]);
 
@@ -197,10 +197,10 @@ function updateTelemetry(lat, lng, speed = STATE.speed, heading = STATE.heading,
     }
 
     // Update Override script
-    elCodeBlock.textContent = `// Скрипт подмены Geolocation API
+    elCodeBlock.textContent = `// Geolocation API Override Script
 const mockLat = ${STATE.lat.toFixed(6)};
 const mockLng = ${STATE.lng.toFixed(6)};
-const mockSpeed = ${STATE.speed > 0 ? (STATE.speed / 3.6).toFixed(2) : 'null'}; // м/с
+const mockSpeed = ${STATE.speed > 0 ? (STATE.speed / 3.6).toFixed(2) : 'null'}; // m/s
 const mockHeading = ${STATE.speed > 0 ? STATE.heading : 'null'};
 
 navigator.geolocation.getCurrentPosition = (success) => {
@@ -272,7 +272,7 @@ function handleRouteMapClick(latlng) {
                 iconAnchor: [12, 12]
             })
         }).addTo(map);
-        elStatus.textContent = "Точка старта выбрана. Выберите точку финиша (клик 2)";
+        elStatus.textContent = "Start point selected. Select end point (click 2)";
     } else if (!STATE.routeEndPoint) {
         STATE.routeEndPoint = latlng;
         routingDestination = latlng;
@@ -288,7 +288,7 @@ function handleRouteMapClick(latlng) {
             })
         }).addTo(map);
         btnDrawRoute.disabled = false;
-        elStatus.textContent = "Точки выбраны. Нажмите 'Построить маршрут'";
+        elStatus.textContent = "Points selected. Click 'Build Route'";
     }
 }
 
@@ -315,11 +315,11 @@ tabs.forEach(tab => {
         }
         if (mode === 'joystick') {
             startJoystickLoop();
-            elStatus.textContent = "Режим управления: Джойстик / WASD";
+            elStatus.textContent = "Control mode: Joystick / WASD";
         } else {
             stopJoystickLoop();
-            if (mode === 'static') elStatus.textContent = "Симуляция активна (Статично)";
-            else elStatus.textContent = "Режим маршрута";
+            if (mode === 'static') elStatus.textContent = "Simulation active (Static)";
+            else elStatus.textContent = "Route mode";
         }
 
         updateTelemetry(STATE.lat, STATE.lng, 0);
@@ -355,11 +355,11 @@ async function performSearch() {
             updateTelemetry(lat, lng, 0);
             map.setView([lat, lng], 14);
         } else {
-            alert('Локация не найдена');
+            alert('Location not found');
         }
     } catch (e) {
-        console.error('Ошибка поиска:', e);
-        alert('Не удалось выполнить поиск');
+        console.error('Search error:', e);
+        alert('Search failed');
     } finally {
         searchBtn.disabled = false;
     }
@@ -389,10 +389,10 @@ function loadBookmarks() {
     } else {
         // Default bookmarks
         STATE.bookmarks = [
-            { name: "Москва (Кремль)", lat: 55.7520, lng: 37.6175 },
-            { name: "Лондон (Big Ben)", lat: 51.5007, lng: -0.1246 },
-            { name: "Нью-Йорк (Times Square)", lat: 40.7580, lng: -73.9855 },
-            { name: "Токио (Shibuya)", lat: 35.6580, lng: 139.7016 }
+            { name: "Moscow (Kremlin)", lat: 55.7520, lng: 37.6175 },
+            { name: "London (Big Ben)", lat: 51.5007, lng: -0.1246 },
+            { name: "New York (Times Square)", lat: 40.7580, lng: -73.9855 },
+            { name: "Tokyo (Shibuya)", lat: 35.6580, lng: 139.7016 }
         ];
         saveBookmarksToStorage();
     }
@@ -402,7 +402,7 @@ function loadBookmarks() {
 function renderBookmarks() {
     bookmarksList.innerHTML = '';
     if (STATE.bookmarks.length === 0) {
-        bookmarksList.innerHTML = '<li class="empty-list-msg">Нет сохраненных локаций</li>';
+        bookmarksList.innerHTML = '<li class="empty-list-msg">No saved locations</li>';
         return;
     }
 
@@ -414,7 +414,7 @@ function renderBookmarks() {
                 <span class="bookmark-name">${bm.name}</span>
                 <span class="bookmark-coords">${bm.lat.toFixed(4)}, ${bm.lng.toFixed(4)}</span>
             </div>
-            <button class="icon-btn delete-bm-btn" data-index="${idx}" title="Удалить"><i data-lucide="x"></i></button>
+            <button class="icon-btn delete-bm-btn" data-index="${idx}" title="Delete"><i data-lucide="x"></i></button>
         `;
 
         li.addEventListener('click', (e) => {
@@ -441,7 +441,7 @@ function renderBookmarks() {
 }
 
 btnBookmarkCurrent.addEventListener('click', () => {
-    const name = prompt("Введите название для этой точки:", `Точка ${STATE.bookmarks.length + 1}`);
+    const name = prompt("Enter name for this location:", `Point ${STATE.bookmarks.length + 1}`);
     if (name) {
         STATE.bookmarks.push({
             name: name,
@@ -499,7 +499,7 @@ btnDrawRoute.addEventListener('click', async () => {
     if (!STATE.routeStartPoint || !STATE.routeEndPoint) return;
 
     btnDrawRoute.disabled = true;
-    btnDrawRoute.innerHTML = `<i data-lucide="loader"></i> Вычисление...`;
+    btnDrawRoute.innerHTML = `<i data-lucide="loader"></i> Calculating...`;
     lucide.createIcons();
 
     try {
@@ -529,16 +529,16 @@ btnDrawRoute.addEventListener('click', async () => {
 
             btnStartRoute.disabled = false;
             btnStartRoute.classList.add('pulse-glow');
-            elStatus.textContent = "Маршрут построен. Нажмите 'Запуск'";
+            elStatus.textContent = "Route built. Click 'Start'";
         } else {
-            alert("Не удалось построить маршрут по дорогам. Используем прямую линию.");
+            alert("Could not build road route. Using straight line.");
             createStraightRoute();
         }
     } catch (e) {
-        console.error("Ошибка маршрутизации OSRM:", e);
+        console.error("OSRM Routing Error:", e);
         createStraightRoute();
     } finally {
-        btnDrawRoute.innerHTML = `<i data-lucide="route"></i> Построить маршрут`;
+        btnDrawRoute.innerHTML = `<i data-lucide="route"></i> Build Route`;
         btnDrawRoute.disabled = false;
         lucide.createIcons();
     }
@@ -579,8 +579,8 @@ function clearRoute() {
 
     btnStartRoute.disabled = true;
     btnPauseRoute.disabled = true;
-    btnStartRoute.innerHTML = `<i data-lucide="play"></i> Запуск`;
-    elStatus.textContent = "Выберите на карте точку старта (клик 1)";
+    btnStartRoute.innerHTML = `<i data-lucide="play"></i> Start`;
+    elStatus.textContent = "Select start point on map (click 1)";
     lucide.createIcons();
 }
 
@@ -598,16 +598,16 @@ btnStartRoute.addEventListener('click', () => {
     if (STATE.isRoutePlaying) {
         // Pause
         stopRouteSimulation();
-        btnStartRoute.innerHTML = `<i data-lucide="play"></i> Продолжить`;
+        btnStartRoute.innerHTML = `<i data-lucide="play"></i> Resume`;
         btnPauseRoute.disabled = true;
-        elStatus.textContent = "Маршрут приостановлен";
+        elStatus.textContent = "Route paused";
         updateTelemetry(STATE.lat, STATE.lng, 0);
     } else {
         // Start/Resume
         STATE.isRoutePlaying = true;
-        btnStartRoute.innerHTML = `<i data-lucide="pause"></i> Пауза`;
+        btnStartRoute.innerHTML = `<i data-lucide="pause"></i> Pause`;
         btnPauseRoute.disabled = false;
-        elStatus.textContent = "Маршрут симулируется...";
+        elStatus.textContent = "Route simulation playing...";
 
         const speedKmh = parseFloat(selectRouteSpeed.value);
         // Calculate dynamic step rate
@@ -628,7 +628,7 @@ btnStartRoute.addEventListener('click', () => {
                 // Route finished
                 stopRouteSimulation();
                 updateTelemetry(STATE.routePoints[STATE.routePoints.length - 1].lat, STATE.routePoints[STATE.routePoints.length - 1].lng, 0);
-                elStatus.textContent = "Маршрут завершен";
+                elStatus.textContent = "Route finished";
                 clearRoute();
                 return;
             }
@@ -684,12 +684,12 @@ const savedJoySpeed = localStorage.getItem('fakegps_joy_speed');
 if (savedJoySpeed && joySpeedSlider) {
     joySpeedSlider.value = savedJoySpeed;
     STATE.joySpeed = parseInt(savedJoySpeed);
-    if (joySpeedVal) joySpeedVal.textContent = `${STATE.joySpeed} км/ч`;
+    if (joySpeedVal) joySpeedVal.textContent = `${STATE.joySpeed} km/h`;
 }
 
 joySpeedSlider.addEventListener('input', (e) => {
     STATE.joySpeed = parseInt(e.target.value);
-    joySpeedVal.textContent = `${STATE.joySpeed} км/ч`;
+    joySpeedVal.textContent = `${STATE.joySpeed} km/h`;
     localStorage.setItem('fakegps_joy_speed', STATE.joySpeed);
 });
 
@@ -855,10 +855,10 @@ document.getElementById('btn-copy-code').addEventListener('click', () => {
     const code = elCodeBlock.textContent;
     navigator.clipboard.writeText(code).then(() => {
         const btn = document.getElementById('btn-copy-code');
-        btn.innerHTML = `<i data-lucide="check"></i> Скопировано`;
+        btn.innerHTML = `<i data-lucide="check"></i> Copied`;
         lucide.createIcons();
         setTimeout(() => {
-            btn.innerHTML = `<i data-lucide="copy"></i> Копировать`;
+            btn.innerHTML = `<i data-lucide="copy"></i> Copy`;
             lucide.createIcons();
         }, 2000);
     });
@@ -1107,7 +1107,7 @@ switchToolView(savedView);
 
         const manName = manNameInput ? manNameInput.value || 'Man' : 'Man';
         const manAge = manAgeInput ? manAgeInput.value || '0' : '0';
-        const DEFAULT_MAN_PHOTO = 'https://alpha.date/static/media/profile_img_empty.0b3d6665cd1c1b51de71.jpg';
+        const DEFAULT_MAN_PHOTO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" rx="16" fill="%23f4f6fa"/><path d="M200 170 C222 170 240 188 240 210 C240 232 222 250 200 250 C178 250 160 232 160 210 C160 188 178 170 200 170 Z M130 320 C130 270 160 260 200 260 C240 260 270 270 270 320" stroke="%23b0b8ca" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
         const manPhoto = (manPhotoInput && manPhotoInput.value.trim()) ? manPhotoInput.value.trim() : DEFAULT_MAN_PHOTO;
         const womanName = womanNameInput ? womanNameInput.value || 'Woman' : 'Woman';
         const womanAge = womanAgeInput ? womanAgeInput.value || '0' : '0';
@@ -1369,7 +1369,7 @@ switchToolView(savedView);
     });
 
     function updateCollageManPhoto(src) {
-        const DEFAULT_MAN_PHOTO = 'https://alpha.date/static/media/profile_img_empty.0b3d6665cd1c1b51de71.jpg';
+        const DEFAULT_MAN_PHOTO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" rx="16" fill="%23f4f6fa"/><path d="M200 170 C222 170 240 188 240 210 C240 232 222 250 200 250 C178 250 160 232 160 210 C160 188 178 170 200 170 Z M130 320 C130 270 160 260 200 260 C240 260 270 270 270 320" stroke="%23b0b8ca" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
         const photoSrc = src ? src : DEFAULT_MAN_PHOTO;
         const placeholder = frameManCollage ? frameManCollage.querySelector('.heart-placeholder') : null;
         if (displayImgMan) {
