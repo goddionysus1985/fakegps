@@ -465,6 +465,15 @@ const btnClearRoute = document.getElementById('btn-clear-route');
 const btnStartRoute = document.getElementById('btn-start-route');
 const btnPauseRoute = document.getElementById('btn-pause-route');
 const selectRouteSpeed = document.getElementById('route-speed');
+const savedRouteSpeed = localStorage.getItem('fakegps_route_speed');
+if (savedRouteSpeed && selectRouteSpeed) {
+    selectRouteSpeed.value = savedRouteSpeed;
+}
+if (selectRouteSpeed) {
+    selectRouteSpeed.addEventListener('change', (e) => {
+        localStorage.setItem('fakegps_route_speed', e.target.value);
+    });
+}
 
 let routingDestination = null;
 
@@ -670,9 +679,18 @@ const joyStick = document.getElementById('joy-stick');
 const joySpeedSlider = document.getElementById('joystick-speed');
 const joySpeedVal = document.getElementById('joystick-speed-val');
 
+// Load saved joystick speed
+const savedJoySpeed = localStorage.getItem('fakegps_joy_speed');
+if (savedJoySpeed && joySpeedSlider) {
+    joySpeedSlider.value = savedJoySpeed;
+    STATE.joySpeed = parseInt(savedJoySpeed);
+    if (joySpeedVal) joySpeedVal.textContent = `${STATE.joySpeed} км/ч`;
+}
+
 joySpeedSlider.addEventListener('input', (e) => {
     STATE.joySpeed = parseInt(e.target.value);
     joySpeedVal.textContent = `${STATE.joySpeed} км/ч`;
+    localStorage.setItem('fakegps_joy_speed', STATE.joySpeed);
 });
 
 // Joystick Drag
@@ -1089,7 +1107,8 @@ switchToolView(savedView);
 
         const manName = manNameInput ? manNameInput.value || 'Man' : 'Man';
         const manAge = manAgeInput ? manAgeInput.value || '0' : '0';
-        const manPhoto = manPhotoInput ? manPhotoInput.value.trim() : '';
+        const DEFAULT_MAN_PHOTO = 'https://alpha.date/static/media/profile_img_empty.0b3d6665cd1c1b51de71.jpg';
+        const manPhoto = (manPhotoInput && manPhotoInput.value.trim()) ? manPhotoInput.value.trim() : DEFAULT_MAN_PHOTO;
         const womanName = womanNameInput ? womanNameInput.value || 'Woman' : 'Woman';
         const womanAge = womanAgeInput ? womanAgeInput.value || '0' : '0';
         const womanPhoto = womanPhotoInput ? womanPhotoInput.value.trim() : '';
@@ -1120,13 +1139,8 @@ switchToolView(savedView);
         if (labelWoman) labelWoman.textContent = `${womanName}, ${womanAge}`;
 
         if (imgMan) {
-            if (manPhoto) {
-                imgMan.src = manPhoto;
-                imgMan.style.display = 'block';
-            } else {
-                imgMan.style.display = 'none';
-                imgMan.src = '';
-            }
+            imgMan.src = manPhoto;
+            imgMan.style.display = 'block';
         }
 
         if (imgWoman) {
@@ -1169,7 +1183,45 @@ switchToolView(savedView);
             womanAge,
             percentage
         );
+
+        // Save state to localStorage on every change
+        saveCompatibilityState();
     }
+
+    // Save compatibility form values to localStorage
+    function saveCompatibilityState() {
+        const data = {
+            manName: manNameInput ? manNameInput.value : '',
+            manAge: manAgeInput ? manAgeInput.value : '',
+            manPhoto: manPhotoInput ? manPhotoInput.value : '',
+            womanName: womanNameInput ? womanNameInput.value : '',
+            womanAge: womanAgeInput ? womanAgeInput.value : '',
+            womanPhoto: womanPhotoInput ? womanPhotoInput.value : '',
+            pct: compatibilityInput ? compatibilityInput.value : '0'
+        };
+        localStorage.setItem('compatibility_form_data', JSON.stringify(data));
+    }
+
+    // Load saved compatibility values on startup
+    function loadCompatibilityState() {
+        const saved = localStorage.getItem('compatibility_form_data');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                if (manNameInput && data.manName !== undefined) manNameInput.value = data.manName;
+                if (manAgeInput && data.manAge !== undefined) manAgeInput.value = data.manAge;
+                if (manPhotoInput && data.manPhoto !== undefined) manPhotoInput.value = data.manPhoto;
+                if (womanNameInput && data.womanName !== undefined) womanNameInput.value = data.womanName;
+                if (womanAgeInput && data.womanAge !== undefined) womanAgeInput.value = data.womanAge;
+                if (womanPhotoInput && data.womanPhoto !== undefined) womanPhotoInput.value = data.womanPhoto;
+                if (compatibilityInput && data.pct !== undefined) compatibilityInput.value = data.pct;
+            } catch(e) {}
+        }
+    }
+
+    // Restore saved values & initial render
+    loadCompatibilityState();
+    updateBars();
 
     // Event Listeners
     [manNameInput, manAgeInput, manPhotoInput, womanNameInput, womanAgeInput, womanPhotoInput, compatibilityInput].forEach(input => {
@@ -1317,17 +1369,13 @@ switchToolView(savedView);
     });
 
     function updateCollageManPhoto(src) {
+        const DEFAULT_MAN_PHOTO = 'https://alpha.date/static/media/profile_img_empty.0b3d6665cd1c1b51de71.jpg';
+        const photoSrc = src ? src : DEFAULT_MAN_PHOTO;
         const placeholder = frameManCollage ? frameManCollage.querySelector('.heart-placeholder') : null;
         if (displayImgMan) {
-            if (src) {
-                displayImgMan.src = src;
-                displayImgMan.style.display = 'block';
-                if (placeholder) placeholder.style.display = 'none';
-            } else {
-                displayImgMan.style.display = 'none';
-                displayImgMan.src = '';
-                if (placeholder) placeholder.style.display = 'flex';
-            }
+            displayImgMan.src = photoSrc;
+            displayImgMan.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
         }
     }
 
