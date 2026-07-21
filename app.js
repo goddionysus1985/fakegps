@@ -248,7 +248,6 @@ map.on('click', (e) => {
     if (STATE.activeMode === 'static' || STATE.activeMode === 'joystick') {
         stopRouteSimulation();
         updateTelemetry(e.latlng.lat, e.latlng.lng, 0);
-        map.panTo(e.latlng);
     } else if (STATE.activeMode === 'route') {
         handleRouteMapClick(e.latlng);
     }
