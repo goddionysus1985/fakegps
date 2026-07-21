@@ -1057,21 +1057,21 @@ switchToolView(savedView);
         const wName = womanName ? womanName : '';
         const hasNames = mName || wName;
 
-        let moodTitle = '✨ Космический Резонанс';
-        let moodDesc = `Энергетическое поле пары ${mName} и ${wName} формирует чистый сине-фиолетовый поток высокой вибрации.`;
+        let moodTitle = '✨ Cosmic Resonance';
+        let moodDesc = `The energy field of ${hasNames ? `${mName} & ${wName}` : 'the couple'} forms a high-vibration aura stream.`;
 
         if (basePct > 80) {
-            moodTitle = '🔥 Огненная Синхронность';
-            moodDesc = `Невероятный всплеск ауры! ${hasNames ? `${mName} и ${wName}` : 'Пара'} создают мощный резонансный импульс страсти.`;
+            moodTitle = '🔥 Fiery Synchronicity';
+            moodDesc = `Incredible aura burst! ${hasNames ? `${mName} & ${wName}` : 'The couple'} create a powerful resonant impulse of passion.`;
         } else if (basePct > 50) {
-            moodTitle = '✨ Гармоничный Поток';
-            moodDesc = `Энергии ${hasNames ? `${mName} и ${wName}` : 'партнеров'} дополняют друг друга, образуя сбалансированное ментальное поле.`;
+            moodTitle = '✨ Harmonious Flow';
+            moodDesc = `The energies of ${hasNames ? `${mName} & ${wName}` : 'partners'} complement each other, creating a balanced mental field.`;
         } else if (str.length > 0) {
-            moodTitle = '⚡ Интригующий Потенциал';
-            moodDesc = `Аура парадоксальна: ${hasNames ? `${mName} и ${wName}` : 'партнеры'} притягиваются по принципу противоположностей.`;
+            moodTitle = '⚡ Intriguing Potential';
+            moodDesc = `Attraction by contrast: ${hasNames ? `${mName} & ${wName}` : 'partners'} ignite a dynamic spark.`;
         } else {
-            moodTitle = '🌌 Ожидание ввода';
-            moodDesc = 'Введите имена пары, чтобы рассчитать энергетическую ауру и биоритмы.';
+            moodTitle = '🌌 Awaiting Input';
+            moodDesc = 'Enter couple names to calculate aura energy and biorhythm synergy.';
         }
 
         if (elAuraTitle) elAuraTitle.textContent = moodTitle;
