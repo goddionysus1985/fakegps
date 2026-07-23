@@ -46,8 +46,45 @@
         </nav>
     </header>
 
+    <!-- TOOL VIEW 0: LAUNCHPAD / WELCOME DASHBOARD -->
+    <section id="view-launchpad" class="tool-view active">
+        <div class="launchpad-container">
+            <header class="launchpad-header">
+                <img src="gps_logo.png" alt="Logo" class="launchpad-logo">
+                <h1>Welcome to <span class="accent-text">ToolHub</span></h1>
+                <p class="subtitle">Select an application to launch</p>
+            </header>
+
+            <div class="apps-grid">
+                <!-- App Card 1: FakeGPS Pro -->
+                <div class="app-card" data-launch="fakegps">
+                    <div class="app-card-icon map-icon">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+                    <div class="app-card-content">
+                        <h2>FakeGPS Pro</h2>
+                        <p>Simulate GPS locations, route driving simulations, and control positions in real time via a virtual joystick.</p>
+                    </div>
+                    <div class="app-card-badge">Launch</div>
+                </div>
+
+                <!-- App Card 2: Compatibility Tester -->
+                <div class="app-card" data-launch="compatibility">
+                    <div class="app-card-icon heart-icon">
+                        <i data-lucide="heart"></i>
+                    </div>
+                    <div class="app-card-content">
+                        <h2>Compatibility Tester</h2>
+                        <p>Analyze physical, emotional, and intellectual biorhythm synergy, test couple connection, and generate heart collages.</p>
+                    </div>
+                    <div class="app-card-badge">Launch</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- TOOL VIEW 1: FAKEGPS PRO -->
-    <section id="view-fakegps" class="tool-view active">
+    <section id="view-fakegps" class="tool-view">
         <div class="app-container">
             <!-- Sidebar Controls -->
             <aside class="sidebar">

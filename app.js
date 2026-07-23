@@ -925,20 +925,46 @@ loadBookmarks();
 // ==========================================
 const navBtnFakeGPS = document.getElementById('nav-btn-fakegps');
 const navBtnCompatibility = document.getElementById('nav-btn-compatibility');
+const viewLaunchpad = document.getElementById('view-launchpad');
 const viewFakeGPS = document.getElementById('view-fakegps');
 const viewCompatibility = document.getElementById('view-compatibility');
 
 function switchToolView(viewName) {
-    if (viewName === 'fakegps') {
-        navBtnFakeGPS.classList.add('active');
-        navBtnCompatibility.classList.remove('active');
-
-        viewFakeGPS.classList.remove('hidden');
-        viewFakeGPS.classList.add('active');
-
+    // Hide all views by default
+    if (viewLaunchpad) {
+        viewLaunchpad.classList.add('hidden');
+        viewLaunchpad.classList.remove('active');
+    }
+    if (viewFakeGPS) {
+        viewFakeGPS.classList.add('hidden');
+        viewFakeGPS.classList.remove('active');
+    }
+    if (viewCompatibility) {
         viewCompatibility.classList.add('hidden');
         viewCompatibility.classList.remove('active');
+    }
 
+    const navMenu = document.querySelector('.nav-menu');
+
+    if (viewName === 'launchpad') {
+        if (navBtnFakeGPS) navBtnFakeGPS.classList.remove('active');
+        if (navBtnCompatibility) navBtnCompatibility.classList.remove('active');
+        if (navMenu) navMenu.style.display = 'none';
+
+        if (viewLaunchpad) {
+            viewLaunchpad.classList.remove('hidden');
+            viewLaunchpad.classList.add('active');
+        }
+        localStorage.setItem('multitool_active_view', 'launchpad');
+    } else if (viewName === 'fakegps') {
+        if (navBtnFakeGPS) navBtnFakeGPS.classList.add('active');
+        if (navBtnCompatibility) navBtnCompatibility.classList.remove('active');
+        if (navMenu) navMenu.style.display = 'flex';
+
+        if (viewFakeGPS) {
+            viewFakeGPS.classList.remove('hidden');
+            viewFakeGPS.classList.add('active');
+        }
         localStorage.setItem('multitool_active_view', 'fakegps');
 
         // Refresh Leaflet map size on view switch
@@ -946,15 +972,14 @@ function switchToolView(viewName) {
             if (map) map.invalidateSize();
         }, 100);
     } else if (viewName === 'compatibility') {
-        navBtnCompatibility.classList.add('active');
-        navBtnFakeGPS.classList.remove('active');
+        if (navBtnCompatibility) navBtnCompatibility.classList.add('active');
+        if (navBtnFakeGPS) navBtnFakeGPS.classList.remove('active');
+        if (navMenu) navMenu.style.display = 'flex';
 
-        viewCompatibility.classList.remove('hidden');
-        viewCompatibility.classList.add('active');
-
-        viewFakeGPS.classList.add('hidden');
-        viewFakeGPS.classList.remove('active');
-
+        if (viewCompatibility) {
+            viewCompatibility.classList.remove('hidden');
+            viewCompatibility.classList.add('active');
+        }
         localStorage.setItem('multitool_active_view', 'compatibility');
     }
 }
@@ -966,8 +991,23 @@ if (navBtnCompatibility) {
     navBtnCompatibility.addEventListener('click', () => switchToolView('compatibility'));
 }
 
-// Restore saved view or default to FakeGPS
-const savedView = localStorage.getItem('multitool_active_view') || 'fakegps';
+// Brand Logo click returns to Launchpad
+const navBrand = document.querySelector('.nav-brand');
+if (navBrand) {
+    navBrand.style.cursor = 'pointer';
+    navBrand.addEventListener('click', () => switchToolView('launchpad'));
+}
+
+// Launchpad Cards Event Listeners
+document.querySelectorAll('.app-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const app = card.getAttribute('data-launch');
+        switchToolView(app);
+    });
+});
+
+// Restore saved view or default to Launchpad
+const savedView = localStorage.getItem('multitool_active_view') || 'launchpad';
 switchToolView(savedView);
 
 
