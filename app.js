@@ -52,7 +52,7 @@ const elSpeed = document.getElementById('val-speed');
 const elHeading = document.getElementById('val-heading');
 const elAlt = document.getElementById('val-alt');
 const elAccuracy = document.getElementById('val-accuracy');
-const elStatus = document.getElementById('hud-status');
+const elStatus = document.getElementById('hud-status') || { set textContent(val) {} };
 const elCodeBlock = document.getElementById('override-script-code');
 
 // Map Setup
