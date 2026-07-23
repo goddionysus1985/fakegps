@@ -2279,28 +2279,26 @@ body.theme-vibrant #view-compatibility {
 }
 
 .sidebar-toggle-btn {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    z-index: 1010;
-    background: rgba(30, 41, 59, 0.7);
+    background-color: var(--bg-sidebar) !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #ffffff;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px !important;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow-md);
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-bottom: 8px;
+    pointer-events: auto !important;
 }
 
 .sidebar-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.1) !important;
     transform: scale(1.05);
 }
 
@@ -2309,11 +2307,12 @@ body.theme-vibrant #view-compatibility {
 }
 
 .sidebar-toggle-btn i {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
-/* Adjust Leaflet zoom controls placement so they don't overlap toggle button */
-.leaflet-top.leaflet-left {
-    margin-top: 64px !important;
+/* Adjust zoom control styling for consistency */
+.leaflet-bar {
+    border-radius: 8px !important;
+    overflow: hidden;
 }

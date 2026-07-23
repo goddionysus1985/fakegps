@@ -57,9 +57,40 @@ const elCodeBlock = document.getElementById('override-script-code');
 
 // Map Setup
 const map = L.map('map', {
-    zoomControl: true,
+    zoomControl: false,
     attributionControl: true
 }).setView([STATE.lat, STATE.lng], 13);
+
+// Sidebar Toggle Custom Control
+const SidebarToggleControl = L.Control.extend({
+    options: {
+        position: 'topleft'
+    },
+    onAdd: function (mapEl) {
+        const container = L.DomUtil.create('button', 'sidebar-toggle-btn');
+        container.id = 'sidebar-toggle';
+        container.title = 'Toggle Sidebar';
+        container.innerHTML = '<i data-lucide="menu"></i>';
+        
+        // Prevent Leaflet map from capturing click/double-click on the button
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+        
+        return container;
+    }
+});
+
+map.addControl(new SidebarToggleControl());
+
+// Re-add Zoom control below the toggle button
+L.control.zoom({
+    position: 'topleft'
+}).addTo(map);
+
+// Run Lucide icon creation for dynamic button element
+if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+}
 
 // Map styles (Clean, keyless Apple Style layer)
 const mapLayers = {
