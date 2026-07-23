@@ -1006,6 +1006,25 @@ document.querySelectorAll('.app-card').forEach(card => {
     });
 });
 
+// Sidebar Toggle (Burger Menu)
+const btnSidebarToggle = document.getElementById('sidebar-toggle');
+const sidebarEl = document.querySelector('.sidebar');
+if (btnSidebarToggle && sidebarEl) {
+    const isSidebarCollapsed = localStorage.getItem('fakegps_sidebar_collapsed') === 'true';
+    if (isSidebarCollapsed) {
+        sidebarEl.classList.add('collapsed');
+    }
+
+    btnSidebarToggle.addEventListener('click', () => {
+        const collapsed = sidebarEl.classList.toggle('collapsed');
+        localStorage.setItem('fakegps_sidebar_collapsed', collapsed);
+
+        setTimeout(() => {
+            if (map) map.invalidateSize();
+        }, 400); // match CSS transition duration
+    });
+}
+
 // Restore saved view or default to Launchpad
 const savedView = localStorage.getItem('multitool_active_view') || 'launchpad';
 switchToolView(savedView);

@@ -37,7 +37,7 @@
         <nav class="nav-menu">
             <button id="nav-btn-fakegps" class="nav-tab active" data-view="fakegps">
                 <i data-lucide="map-pin"></i>
-                <span>FakeGPS Pro</span>
+                <span>FakeGPS</span>
             </button>
             <button id="nav-btn-compatibility" class="nav-tab" data-view="compatibility">
                 <i data-lucide="heart"></i>
@@ -56,13 +56,13 @@
             </header>
 
             <div class="apps-grid">
-                <!-- App Card 1: FakeGPS Pro -->
+                <!-- App Card 1: FakeGPS -->
                 <div class="app-card" data-launch="fakegps">
                     <div class="app-card-icon map-icon">
                         <i data-lucide="map-pin"></i>
                     </div>
                     <div class="app-card-content">
-                        <h2>FakeGPS Pro</h2>
+                        <h2>FakeGPS</h2>
                         <p>Simulate GPS locations, route driving simulations, and control positions in real time via a virtual joystick.</p>
                     </div>
                     <div class="app-card-badge">Launch</div>
@@ -92,7 +92,7 @@
                     <div class="logo-wrapper">
                         <div class="pulse-indicator"></div>
                         <img src="gps_logo.png" alt="Logo" class="logo-image">
-                        <h1>FakeGPS <span class="accent-text">Pro</span></h1>
+                        <h1>FakeGPS</h1>
                     </div>
                     <div class="header-actions">
                         <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
@@ -291,6 +291,9 @@ navigator.geolocation.getCurrentPosition = (success) => {
 
             <!-- Map Container -->
             <main class="map-view">
+                <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Sidebar">
+                    <i data-lucide="menu"></i>
+                </button>
                 <div id="map"></div>
             </main>
         </div>
